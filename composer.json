@@ -1,0 +1,20 @@
+{
+    "name": "gemvc/stcms",
+    "description": "A lightweight, static-like PHP website with clean architecture and multi-language support.",
+    "require-dev": {
+        "symfony/dotenv": "^7.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Gemvc\\Stcms\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ali Khorsandfard",
+            "email": "ali.khorsandfard@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}

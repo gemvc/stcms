@@ -7,7 +7,7 @@ A Composer-installable PHP library for building modern, component-based frontend
 - 🚀 **Hybrid Rendering**: Twig for server-side, React for interactive components
 - 🔌 **API Integration**: Fetch data from GEMVC or any API using Guzzle
 - ⚡ **Modern Caching**: Symfony Cache (APCu/file)
-- 🛠️ **CLI Project Init**: Scaffold new projects with `vendor/bin/stcms init`
+- 🛠️ **CLI Project Init**: Scaffold new projects with `vendor/gemvc/stcms/bin/stcms init`
 - 🎨 **Component-based UI**: React components in `/assets/js/components/`, bundled with Vite
 - 🗂️ **Multi-language Support**: Easily add new languages
 - 🔒 **Config via .env**: Symfony Dotenv for environment config
@@ -24,7 +24,7 @@ composer require gemvc/stcms
 
 ### 2. Initialize a New Project
 ```bash
-vendor/bin/stcms init
+php vendor/gemvc/stcms/bin/stcms init
 ```
 
 ### 3. Build Frontend Assets (React via Vite)

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title|default('STCMS Example') }}</title>
+</head>
+<body>
+    <h1>{{ title|default('STCMS Example') }}</h1>
+    <div id="user-profile-root" data-user="{{ user|json_encode }}" {% if jwt %}data-jwt="{{ jwt }}"{% endif %}></div>
+    <script src="/assets/js/app.js"></script>
+</body>
+</html> 

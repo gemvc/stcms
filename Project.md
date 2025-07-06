@@ -1,142 +1,89 @@
-# STCMS Static Website CMS multi language multi template Specification
+# STCMS - Modern PHP Hybrid CMS Library
 
 ## Project Target
 
-A lightweight, static-like PHP website with clean architecture and multi-language support.
+A Composer-installable PHP library that provides a modern, component-based frontend for GEMVC (or any API backend), with:
+- Hybrid rendering: Twig for server-side templates, React (via Vite) for interactive components
+- API integration via Guzzle
+- Config via Symfony Dotenv
+- Caching via Symfony Cache (APCu/file)
+- CLI project initialization
+- Easy for both PHP and frontend (React) developers
 
 ## Core Requirements
 
-- **No database or CMS** (just PHP files)
-- **Reusable header, footer, sidebar** (via PHP includes)
-- **Multi-language support** (per-language folders, e.g., `/en/`, `/de/`)
-- **Simple routing** (via clean URLs, no frameworks)
-- **Easy to add new pages** (just add a PHP file in the right folder)
-- **SEO-friendly** (customizable title, description, keywords per page)
+- **Composer package** (install with `composer require gemvc/stcms`)
+- **CLI tool** (`vendor/bin/stcms init`) to scaffold new projects
+- **Twig** for server-side templates (with template/component structure)
+- **Vite** for React component bundling (`/assets/js/components/`)
+- **Guzzle** for API calls to GEMVC or any backend
+- **Symfony Cache** (APCu if available, fallback to file)
+- **Symfony Dotenv** for configuration
+- **Multi-language support** (via config and templates)
+- **SEO-friendly** (customizable meta per page)
 - **Modern, maintainable code structure**
-- **Optional:** Simple file-based caching for performance (no Memcache required)
 
 ## Project Structure
 
 ```
 /
-├── index.php                    # Main router/entry point
-├── code/                        # PHP base classes
-│   ├── Router.php
-│   ├── Cache.php
-│   └── ...
-├── content/                     # Page content (SEO variables + HTML)
-│   ├── en/
-│   │   ├── docs/
-│   │   │   ├── home.php
-│   │   │   ├── installation.php
-│   │   │   └── ...
-│   │   └── landing/
-│   │       ├── home.php
-│   │       ├── about.php
-│   │       └── ...
-│   └── de/
-│       ├── docs/
-│       └── landing/
-├── templates/                   # Layout templates
-│   ├── en/
-│   │   ├── docs.template.php
-│   │   └── landing.template.php
-│   └── de/
-│       ├── docs.template.php
-│       └── landing.template.php
+├── src/                    # PHP library code (autoloaded)
+│   ├── Core/               # Core classes (Cache, ApiClient, etc.)
+│   └── Command/            # CLI commands
+├── templates/              # Twig templates (layouts, pages, components)
 ├── assets/
-│   ├── css/
 │   ├── js/
-│   └── images/
-└── .htaccess                   # URL rewriting
+│   │   ├── components/     # React components (JSX)
+│   │   └── app.jsx         # Main React entry
+│   └── css/                # CSS (optional, Tailwind via CDN or Vite)
+├── public/
+│   └── assets/js/          # Vite build output
+├── .env                    # Config
+├── vite.config.js          # Vite config
+├── composer.json           # Composer config
+└── bin/stcms               # CLI entry point
 ```
 
 ## How It Works
 
-### 1. Main Router (`index.php`)
-- Parses URL to determine language, template, and page
-- Loads appropriate content file (sets SEO variables)
-- Loads appropriate template file (includes header/footer)
-- Handles caching
+- **User installs via Composer**
+- **Runs CLI to scaffold project**
+- **Twig renders main pages**; React components are mounted where needed
+- **API data fetched via Guzzle** (with caching)
+- **Frontend devs build React components in `/assets/js/components/`**
+- **Vite bundles JS for use in templates**
+- **Config and cache are environment-driven**
 
-### 2. Code Classes (`code/`)
-- `Router.php` - URL parsing and routing logic
-- `Cache.php` - Simple file-based caching
-- Other utility classes
+## Hybrid Rendering Example
 
-### 3. Content Files (`content/`)
-- Each file sets SEO variables (`$page_title`, `$page_description`, etc.)
-- Contains the main content HTML
-- Organized by language and template type
+- Twig template:
+  ```twig
+  <div id="user-profile-root" data-user="{{ user|json_encode }}" {% if jwt %}data-jwt="{{ jwt }}"{% endif %}></div>
+  <script src="/assets/js/app.js"></script>
+  ```
+- React mounts on `#user-profile-root` and renders the component, using the JWT if present
 
-### 4. Template Files (`templates/`)
-- Include header, footer, sidebar
-- Use content from the content files
-- Handle the overall page structure
-
-## URL Examples
-
-- `/en/docs/installation` → `content/en/docs/installation.php` + `templates/en/docs.template.php`
-- `/de/landing/about` → `content/de/landing/about.php` + `templates/de/landing.template.php`
-- `/en/landing/home` → `content/en/landing/home.php` + `templates/en/landing.template.php`
+## Authentication Flow & Security
+- **JWT is only exposed to React if the user is authenticated** (JWT is present in PHP session).
+- **If not authenticated, no JWT is exposed**—React knows to show login or restrict access.
+- **React components use the JWT for API requests** (e.g., via Axios/fetch, in Authorization header).
+- **JWT is never generated or verified in the frontend**—all JWT logic is handled by the backend (GEMVC API).
+- **Session management and login/logout handled by PHP backend.**
+- **Best practice:** Always validate JWTs on the backend for every API request.
 
 ## Benefits
 
-- ✅ Clean separation of content and layout
-- ✅ Easy to add new languages (copy folder, translate)
-- ✅ Easy to add new pages (copy PHP file, edit content)
-- ✅ SEO-friendly (customizable per page)
-- ✅ No database required
-- ✅ Simple file-based caching
-- ✅ Maintainable structure
-
-## Content File Example
-
-```php
-<?php
-// SEO Metadata for this page
-$page_title = "GEMVC - Installation Guide";
-$page_description = "Learn how to install GEMVC PHP framework";
-$page_keywords = "GEMVC, installation, PHP framework";
-$page_name = "Installation";
-?>
-
-<!-- Page content HTML -->
-<section class="hero">
-    <h1>Installation Guide</h1>
-    <p>Follow these steps to install GEMVC...</p>
-</section>
-```
-
-## Template File Example
-
-```php
-<!DOCTYPE html>
-<html lang="<?php echo $language; ?>">
-<head>
-    <title><?php echo $page_title; ?></title>
-    <meta name="description" content="<?php echo $page_description; ?>">
-    <meta name="keywords" content="<?php echo $page_keywords; ?>">
-</head>
-<body>
-    <?php include 'en/header.php'; ?>
-    
-    <main>
-        <?php echo $content; ?>
-    </main>
-    
-    <?php include 'en/footer.php'; ?>
-</body>
-</html>
-```
+- ✅ Clean separation of backend, templates, and frontend components
+- ✅ Easy for both PHP and React developers
+- ✅ Fast, SEO-friendly, and interactive
+- ✅ Works on most hosting (APCu/file cache)
+- ✅ Extensible and maintainable
 
 ## Implementation Steps
 
-1. Create folder structure
-2. Create base classes (Router, Cache)
-3. Create main index.php router
-4. Create template files
-5. Create content files
-6. Set up .htaccess for URL rewriting
-7. Add assets (CSS, JS, images)
-8. Test and refine 
+1. Create Composer package structure
+2. Add CLI tool for project init
+3. Set up Twig, Dotenv, Cache, Guzzle
+4. Set up Vite for React components
+5. Scaffold example templates and components
+6. Document usage for both PHP and frontend devs 

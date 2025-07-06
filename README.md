@@ -1,261 +1,121 @@
-# STCMS - Static Website CMS
+# STCMS - Hybrid PHP/React CMS Library
 
-A lightweight, static-like PHP website with clean architecture and multi-language support.
+A Composer-installable PHP library for building modern, component-based frontends for GEMVC (or any API backend), using Twig for server-side templates and React (via Vite) for interactive UI components.
 
 ## Features
 
-- ✅ **No Database Required** - Everything is file-based
-- ✅ **Multi-language Support** - Built-in support for multiple languages
-- ✅ **Clean URLs** - SEO-friendly URLs with automatic routing
-- ✅ **Template System** - Reusable templates with header, footer, and sidebar
-- ✅ **SEO Optimized** - Customizable meta tags per page
-- ✅ **Optional Caching** - File-based caching for improved performance
-- ✅ **Modern Design** - Responsive, clean, and professional UI
-- ✅ **Easy to Extend** - Simple to add new pages and languages
+- 🚀 **Hybrid Rendering**: Twig for server-side, React for interactive components
+- 🔌 **API Integration**: Fetch data from GEMVC or any API using Guzzle
+- ⚡ **Modern Caching**: Symfony Cache (APCu/file)
+- 🛠️ **CLI Project Init**: Scaffold new projects with `vendor/bin/stcms init`
+- 🎨 **Component-based UI**: React components in `/assets/js/components/`, bundled with Vite
+- 🗂️ **Multi-language Support**: Easily add new languages
+- 🔒 **Config via .env**: Symfony Dotenv for environment config
+- 🧩 **Extensible**: Easy for both PHP and frontend devs
 
 ## Quick Start
 
-### Prerequisites
+### 1. Install via Composer
+```bash
+composer require gemvc/stcms
+```
 
-- PHP 7.4 or higher
-- Apache (with mod_rewrite enabled) or Nginx
-- Web server with write permissions for cache directory
+### 2. Initialize a New Project
+```bash
+vendor/bin/stcms init
+```
 
-### Installation
+### 3. Build Frontend Assets (React via Vite)
+```bash
+npm install
+npx vite build
+```
 
-1. **Clone or download the repository**
-   ```bash
-   git clone https://github.com/your-repo/stcms.git
-   cd stcms
-   ```
+### 4. Configure Environment
+Edit `.env` for API base URL, cache, etc.
 
-2. **Set up your web server**
-   - Point your web server's document root to the STCMS directory
-   - Ensure mod_rewrite is enabled (Apache)
-   - Make sure the cache directory is writable
-
-3. **Test the installation**
-   - Visit `http://yourdomain.com/en` for the English home page
-   - Visit `http://yourdomain.com/en/docs` for the documentation
+### 5. Start Developing
+- **Twig templates** in `/templates/`
+- **React components** in `/assets/js/components/`
+- **API calls** via Guzzle in PHP
 
 ## Project Structure
-
 ```
 /
-├── index.php                    # Main router/entry point
-├── code/                        # PHP base classes
-│   ├── Router.php              # URL parsing and routing
-│   └── Cache.php               # File-based caching
-├── content/                     # Page content (SEO variables + HTML)
-│   ├── en/                     # English content
-│   │   ├── docs/              # Documentation pages
-│   │   └── landing/           # Landing pages
-│   └── de/                     # German content
-├── templates/                   # Layout templates
-│   ├── en/                     # English templates
-│   └── de/                     # German templates
+├── src/                    # PHP library code
+│   ├── Core/               # Core classes (Cache, ApiClient, etc.)
+│   └── Command/            # CLI commands
+├── templates/              # Twig templates (layouts, pages, components)
 ├── assets/
-│   ├── css/                    # Stylesheets
-│   ├── js/                     # JavaScript files
-│   └── images/                 # Images
-└── .htaccess                   # URL rewriting rules
+│   ├── js/
+│   │   ├── components/     # React components (JSX)
+│   │   └── app.jsx         # Main React entry
+│   └── css/                # CSS (optional, Tailwind via CDN or Vite)
+├── public/
+│   └── assets/js/          # Vite build output
+├── .env                    # Config
+├── vite.config.js          # Vite config
+├── composer.json           # Composer config
+└── bin/stcms               # CLI entry point
 ```
 
 ## How It Works
+- **Twig renders main pages**; React components are mounted where needed
+- **API data fetched via Guzzle** (with Symfony Cache)
+- **Frontend devs build React components in `/assets/js/components/`**
+- **Vite bundles JS for use in templates**
+- **Config and cache are environment-driven**
 
-### URL Routing
+## Example: Hybrid Rendering
 
-STCMS uses a simple but powerful routing system:
-
-- `/en/docs/installation` → `content/en/docs/installation.php` + `templates/en/docs.template.php`
-- `/de/landing/about` → `content/de/landing/about.php` + `templates/de/landing.template.php`
-- `/en/landing/home` → `content/en/landing/home.php` + `templates/en/landing.template.php`
-
-### Content Files
-
-Each content file sets SEO variables and contains the main HTML content:
-
-```php
-<?php
-// SEO Metadata for this page
-$page_title = "STCMS - Installation Guide";
-$page_description = "Learn how to install STCMS on your web server.";
-$page_keywords = "STCMS, installation, setup, web server, PHP";
-$page_name = "Installation";
-?>
-
-<!-- Page content HTML -->
-<section class="hero">
-    <h1>Installation Guide</h1>
-    <p>Follow these steps to install STCMS...</p>
-</section>
+Twig template:
+```twig
+<div id="user-profile-root" data-user="{{ user|json_encode }}" {% if jwt %}data-jwt="{{ jwt }}"{% endif %}></div>
+<script src="/assets/js/app.js"></script>
 ```
 
-### Template Files
+React entry (app.jsx):
+```jsx
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import UserProfile from './components/UserProfile';
 
-Templates handle the overall page structure and include header, footer, and content:
-
-```php
-<!DOCTYPE html>
-<html lang="<?php echo $language; ?>">
-<head>
-    <title><?php echo htmlspecialchars($page_title); ?></title>
-    <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
-</head>
-<body>
-    <?php include 'header.php'; ?>
-    
-    <main>
-        <?php echo $content; ?>
-    </main>
-    
-    <?php include 'footer.php'; ?>
-</body>
-</html>
-```
-
-## Adding New Pages
-
-1. **Create a content file** in the appropriate language and template folder:
-   ```
-   content/en/landing/contact.php
-   ```
-
-2. **Set SEO variables** at the top of the file:
-   ```php
-   <?php
-   $page_title = "Contact Us";
-   $page_description = "Get in touch with our team";
-   $page_keywords = "contact, support, help";
-   $page_name = "Contact";
-   ?>
-   ```
-
-3. **Add your HTML content** below the PHP variables
-
-4. **Access the page** at `/en/landing/contact`
-
-## Adding New Languages
-
-1. **Create language folders**:
-   ```bash
-   mkdir -p content/fr/landing content/fr/docs
-   mkdir -p templates/fr
-   ```
-
-2. **Add the language** to the Router class:
-   ```php
-   // In code/Router.php
-   private $supportedLanguages = ['en', 'de', 'fr'];
-   ```
-
-3. **Create templates** for the new language:
-   ```
-   templates/fr/landing.template.php
-   templates/fr/docs.template.php
-   ```
-
-4. **Add content files** in the new language folders
-
-## Configuration
-
-### Supported Languages
-
-Edit `code/Router.php` to add or remove supported languages:
-
-```php
-private $supportedLanguages = ['en', 'de', 'fr', 'es'];
-```
-
-### Supported Templates
-
-Add new template types in `code/Router.php`:
-
-```php
-private $supportedTemplates = ['docs', 'landing', 'blog'];
-```
-
-### Cache Settings
-
-Configure caching in `code/Cache.php`:
-
-```php
-private $defaultExpiry = 3600; // 1 hour
-private $cacheDir = 'cache/';
-```
-
-## Web Server Configuration
-
-### Apache
-
-Make sure mod_rewrite is enabled:
-
-```bash
-sudo a2enmod rewrite
-sudo systemctl restart apache2
-```
-
-The `.htaccess` file handles URL rewriting automatically.
-
-### Nginx
-
-Add this to your Nginx server block:
-
-```nginx
-location / {
-    try_files $uri $uri/ /index.php?$query_string;
+const el = document.getElementById('user-profile-root');
+if (el) {
+  const user = JSON.parse(el.dataset.user);
+  const jwt = el.dataset.jwt; // Only present if authenticated
+  createRoot(el).render(<UserProfile user={user} jwt={jwt} />);
 }
 ```
 
-## Development
+## Authentication Flow & Security
+- **JWT is only exposed to React if the user is authenticated** (JWT is present in PHP session).
+- **If not authenticated, no JWT is exposed**—React knows to show login or restrict access.
+- **React components use the JWT for API requests** (e.g., via Axios/fetch, in Authorization header).
+- **JWT is never generated or verified in the frontend**—all JWT logic is handled by the backend (GEMVC API).
+- **Session management and login/logout handled by PHP backend.**
+- **Best practice:** Always validate JWTs on the backend for every API request.
 
-### Local Development Server
+## Benefits
+- ✅ Clean separation of backend, templates, and frontend components
+- ✅ Easy for both PHP and React developers
+- ✅ Fast, SEO-friendly, and interactive
+- ✅ Works on most hosting (APCu/file cache)
+- ✅ Extensible and maintainable
 
-For development, you can use PHP's built-in server:
+## For PHP Developers
+- Use Twig for layouts, pages, and partials
+- Fetch API data with Guzzle (and cache it)
+- Pass data to React components via JSON in the DOM
+- Expose JWT to React only if authenticated
 
-```bash
-php -S localhost:8000
-```
-
-Then visit `http://localhost:8000/en`
-
-### Debug Mode
-
-Enable error reporting for debugging by adding this to `index.php`:
-
-```php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-```
-
-## Performance
-
-### Caching
-
-STCMS includes optional file-based caching. The Cache class provides:
-
-- Automatic cache expiration
-- Cache invalidation
-- Performance monitoring
-
-### Optimization Tips
-
-1. **Enable caching** for production environments
-2. **Minify CSS and JavaScript** for faster loading
-3. **Optimize images** before uploading
-4. **Use a CDN** for static assets
-5. **Enable gzip compression** on your web server
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Internet Explorer 11+
+## For React Developers
+- Build components in `/assets/js/components/`
+- Use Vite for fast dev/build
+- Mount components anywhere in Twig templates
+- Use JWT (if present) for authenticated API requests
 
 ## Contributing
-
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
@@ -263,8 +123,7 @@ STCMS includes optional file-based caching. The Cache class provides:
 5. Submit a pull request
 
 ## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT
 
 ## Support
 

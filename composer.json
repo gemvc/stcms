@@ -1,8 +1,18 @@
 {
     "name": "gemvc/stcms",
     "description": "A lightweight, static-like PHP website with clean architecture and multi-language support.",
-    "require-dev": {
-        "symfony/dotenv": "^7.3"
+    "type": "library",
+    "require": {
+        "php": ">=8.0",
+        "symfony/cache": "^7.0",
+        "symfony/dotenv": "^7.0",
+        "symfony/console": "^7.0",
+        "symfony/filesystem": "^7.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "twig/twig": "^3.0"
+    },
+    "suggest": {
+        "ext-apcu": "Allows use of APCu for in-memory caching (recommended for best performance)"
     },
     "autoload": {
         "psr-4": {
@@ -15,6 +25,5 @@
             "email": "ali.khorsandfard@gmail.com"
         }
     ],
-    "minimum-stability": "stable",
-    "require": {}
+    "minimum-stability": "stable"
 }

@@ -2,7 +2,7 @@
     "name": "gemvc/stcms",
     "description": "A lightweight, static-like PHP website with clean architecture and multi-language support.",
     "type": "library",
-    "license": "MIT"
+    "license": "MIT",
     "require": {
         "php": ">=8.0",
         "symfony/cache": "^7.0",

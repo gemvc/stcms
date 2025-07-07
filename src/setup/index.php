@@ -5,10 +5,11 @@ use Gemvc\Stcms\Core\Application;
 use Gemvc\Stcms\Core\Router;
 use Gemvc\Stcms\Core\TemplateEngine;
 use Gemvc\Stcms\Core\ApiClient;
+use Symfony\Component\Dotenv\Dotenv;
 
 // Load environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+$dotenv = new Dotenv();
+$dotenv->loadEnv(__DIR__ . '/.env');
 
 // Initialize core components
 $apiClient = new ApiClient($_ENV['API_BASE_URL']);

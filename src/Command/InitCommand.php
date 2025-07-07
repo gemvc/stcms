@@ -29,6 +29,7 @@ class InitCommand extends Command
             'src/Core',
             'src/Command',
             'templates',
+            'pages',
             'assets/js/components',
             'assets/css',
             'public/assets/js',
@@ -68,11 +69,16 @@ class InitCommand extends Command
         $fs->dumpFile('.gitignore', $gitignoreContent);
 
         // Copy templates
-        $twigContent = file_get_contents($setupDir . '/templates/example.twig');
-        $fs->dumpFile('templates/example.twig', $twigContent);
-        
-        $indexTwigContent = file_get_contents($setupDir . '/templates/index.twig');
-        $fs->dumpFile('templates/index.twig', $indexTwigContent);
+        foreach (glob($setupDir . '/templates/*.twig') as $templateFile) {
+            $basename = basename($templateFile);
+            $fs->dumpFile('templates/' . $basename, file_get_contents($templateFile));
+        }
+
+        // Copy pages
+        foreach (glob($setupDir . '/pages/*.twig') as $pageFile) {
+            $basename = basename($pageFile);
+            $fs->dumpFile('pages/' . $basename, file_get_contents($pageFile));
+        }
 
         // Copy React components
         $reactComponentContent = file_get_contents($setupDir . '/assets/js/components/UserProfile.jsx');
@@ -89,6 +95,14 @@ class InitCommand extends Command
         // Copy .htaccess
         $htaccessContent = file_get_contents($setupDir . '/.htaccess');
         $fs->dumpFile('.htaccess', $htaccessContent);
+
+        // Copy Project.md
+        $projectContent = file_get_contents($setupDir . '/Project.md');
+        $fs->dumpFile('Project.md', $projectContent);
+
+        // Copy README.md
+        $readmeContent = file_get_contents($setupDir . '/README.md');
+        $fs->dumpFile('README.md', $readmeContent);
 
         $output->writeln('<comment>Copied setup files from src/setup/</comment>');
     }

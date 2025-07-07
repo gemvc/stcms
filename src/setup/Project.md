@@ -37,8 +37,7 @@ A Composer-installable PHP library that provides a modern, component-based front
 │   │   └── ApiClient.php   # HTTP API communication
 │   ├── Command/            # CLI commands
 │   └── setup/              # Template files for project initialization
-├── pages/                  # Real user-facing pages (Twig)
-├── templates/              # Twig layouts, partials, and reusable templates
+├── templates/              # Twig templates (layouts, pages, components)
 ├── assets/
 │   ├── js/
 │   │   ├── components/     # React components (JSX)
@@ -96,21 +95,17 @@ HTTP API communication using Guzzle:
 
 - **User installs via Composer**
 - **Runs CLI to scaffold project** (copies files from `src/setup/`)
-- **Twig renders main pages from `/pages/`**; React components are mounted where needed
-- **Reusable layouts/partials in `/templates/`**
+- **Twig renders main pages**; React components are mounted where needed
 - **API data fetched via Guzzle** (with caching)
 - **Frontend devs build React components in `/assets/js/components/`**
-- **Vite bundles JS for use in templates/pages**
+- **Vite bundles JS for use in templates**
 - **Config and cache are environment-driven**
 
 ## Hybrid Rendering Example
 
-- Twig page (in `/pages/`):
+- Twig template:
   ```twig
-  {% extends 'layout.twig' %}
-  {% block content %}
   <div id="user-profile-root" data-user="{{ user|json_encode }}" {% if jwt %}data-jwt="{{ jwt }}"{% endif %}></div>
-  {% endblock %}
   <script src="{{ asset('js/app.js') }}"></script>
   ```
 - React mounts on `#user-profile-root` and renders the component, using the JWT if present
@@ -135,10 +130,9 @@ src/setup/
 ├── env.template        # Environment configuration template
 ├── vite.config.js      # Vite build configuration
 ├── package.json        # Frontend dependencies
-├── templates/          # Layouts, partials, reusable Twig blocks
-│   └── example.twig    # Example template
-├── pages/              # Real user-facing pages (Twig)
-│   └── index.twig      # Example landing page
+├── templates/
+│   ├── example.twig    # Example template
+│   └── index.twig      # Beautiful landing page template
 └── assets/js/
     ├── app.jsx         # React entry point
     └── components/
@@ -147,7 +141,7 @@ src/setup/
 
 ## Benefits
 
-- ✅ Clean separation of backend, pages, templates, and frontend components
+- ✅ Clean separation of backend, templates, and frontend components
 - ✅ Easy for both PHP and React developers
 - ✅ Fast, SEO-friendly, and interactive
 - ✅ Works on most hosting (APCu/file cache)

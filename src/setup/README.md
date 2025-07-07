@@ -37,8 +37,7 @@ npx vite build
 Edit `.env` for API base URL, cache, etc.
 
 ### 5. Start Developing
-- **Pages** in `/pages/` (real user-facing pages)
-- **Templates** in `/templates/` (layouts, partials, reusable Twig blocks)
+- **Twig templates** in `/templates/`
 - **React components** in `/assets/js/components/`
 - **API calls** via Guzzle in PHP
 
@@ -55,8 +54,7 @@ Edit `.env` for API base URL, cache, etc.
 │   │   └── ApiClient.php   # HTTP API communication
 │   ├── Command/            # CLI commands
 │   └── setup/              # Template files for project initialization
-├── pages/                  # Real user-facing pages (Twig)
-├── templates/              # Twig layouts, partials, and reusable templates
+├── templates/              # Twig templates (layouts, pages, components)
 ├── assets/
 │   ├── js/
 │   │   ├── components/     # React components (JSX)
@@ -92,21 +90,17 @@ Twig integration with custom functions:
 HTTP API communication using Guzzle with JWT authentication support.
 
 ## How It Works
-- **Twig renders main pages from `/pages/`**; React components are mounted where needed
-- **Reusable layouts/partials in `/templates/`**
+- **Twig renders main pages**; React components are mounted where needed
 - **API data fetched via Guzzle** (with Symfony Cache)
 - **Frontend devs build React components in `/assets/js/components/`**
-- **Vite bundles JS for use in templates/pages**
+- **Vite bundles JS for use in templates**
 - **Config and cache are environment-driven**
 
 ## Example: Hybrid Rendering
 
-Twig page (in `/pages/`):
+Twig template:
 ```twig
-{% extends 'layout.twig' %}
-{% block content %}
 <div id="user-profile-root" data-user="{{ user|json_encode }}" {% if jwt %}data-jwt="{{ jwt }}"{% endif %}></div>
-{% endblock %}
 <script src="{{ asset('js/app.js') }}"></script>
 ```
 
@@ -144,10 +138,9 @@ src/setup/
 ├── env.template        # Environment configuration template
 ├── vite.config.js      # Vite build configuration
 ├── package.json        # Frontend dependencies
-├── templates/          # Layouts, partials, reusable Twig blocks
-│   └── example.twig    # Example template
-├── pages/              # Real user-facing pages (Twig)
-│   └── index.twig      # Example landing page
+├── templates/
+│   ├── example.twig    # Example template
+│   └── index.twig      # Beautiful landing page template
 └── assets/js/
     ├── app.jsx         # React entry point
     └── components/
@@ -155,7 +148,7 @@ src/setup/
 ```
 
 ## Benefits
-- ✅ Clean separation of backend, pages, templates, and frontend components
+- ✅ Clean separation of backend, templates, and frontend components
 - ✅ Easy for both PHP and React developers
 - ✅ Fast, SEO-friendly, and interactive
 - ✅ Works on most hosting (APCu/file cache)
@@ -165,7 +158,7 @@ src/setup/
 - ✅ Modern development workflow
 
 ## For PHP Developers
-- Use `/pages/` for real pages, `/templates/` for layouts/partials
+- Use Twig for layouts, pages, and partials
 - Fetch API data with Guzzle (and cache it)
 - Pass data to React components via JSON in the DOM
 - Expose JWT to React only if authenticated
@@ -174,7 +167,7 @@ src/setup/
 ## For React Developers
 - Build components in `/assets/js/components/`
 - Use Vite for fast dev/build
-- Mount components anywhere in Twig pages/templates
+- Mount components anywhere in Twig templates
 - Use JWT (if present) for authenticated API requests
 - Leverage the asset() function for static file URLs
 

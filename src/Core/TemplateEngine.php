@@ -9,9 +9,14 @@ class TemplateEngine
 {
     private Environment $twig;
 
-    public function __construct(string $templatePath)
+    /**
+     * @param string|array $templatePaths One or more paths (e.g. [pages, templates])
+     */
+    public function __construct($templatePaths)
     {
-        $loader = new FilesystemLoader($templatePath);
+        // Accept either a string or array of paths
+        $paths = is_array($templatePaths) ? $templatePaths : [$templatePaths];
+        $loader = new FilesystemLoader($paths);
         $this->twig = new Environment($loader, [
             'cache' => false, // Disable cache in development
             'debug' => true,

@@ -12,7 +12,10 @@ $dotenv->load();
 
 // Initialize core components
 $apiClient = new ApiClient($_ENV['API_BASE_URL']);
-$templateEngine = new TemplateEngine(__DIR__ . '/templates');
+$templateEngine = new TemplateEngine([
+    __DIR__ . '/pages',
+    __DIR__ . '/templates',
+]);
 $router = new Router();
 
 // Create and run the application

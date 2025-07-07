@@ -26,8 +26,6 @@ class InitCommand extends Command
         
         // Create directories
         $dirs = [
-            'src/Core',
-            'src/Command',
             'templates',
             'pages',
             'assets/js/components',

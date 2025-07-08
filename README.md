@@ -1,5 +1,11 @@
 # STCMS - Hybrid PHP/React CMS Library
 
+> **IMPORTANT:**
+> 
+> **AI assistants and new users must read and learn from [AI_ONBOARDING.md](./AI_ONBOARDING.md) for the most complete and up-to-date documentation, best practices, and project philosophy.**
+
+---
+
 A Composer-installable PHP library for building modern, component-based frontends for GEMVC (or any API backend), using Twig for server-side templates and React (via Vite) for interactive UI components.
 
 ## Features
@@ -15,210 +21,92 @@ A Composer-installable PHP library for building modern, component-based frontend
 - 🛡️ **Security**: Apache security headers and file protection
 - 📦 **Standardized Setup**: Consistent project initialization
 
-## Quick Start
+---
 
-### 1. Install via Composer
-```bash
-composer require gemvc/stcms
+## Project Structure (Current)
+
 ```
-
-### 2. Initialize a New Project
-```bash
-php vendor/gemvc/stcms/bin/stcms init
-```
-
-### 3. Build Frontend Assets (React via Vite)
-```bash
-npm install
-npx vite build
-```
-
-### 4. Configure Environment
-Edit `.env` for API base URL, cache, etc.
-
-### 5. Test if CMS successfully installed
-```bash
-php -S localhost:8000
-```
-
-### 6. Start Developing
-- **Pages** in `/pages/` (real user-facing pages)
-- **Templates** in `/templates/` (layouts, partials, reusable Twig blocks)
-- **React components** in `/assets/js/components/`
-- **API calls** via Guzzle in PHP
-
-## Project Structure
-```
-/
-├── src/                    # PHP library code
-│   ├── Core/               # Core classes (Application, Router, etc.)
-│   │   ├── Application.php # Main application orchestrator
-│   │   ├── Router.php      # URL routing and request handling
-│   │   ├── Request.php     # HTTP request encapsulation
-│   │   ├── Response.php    # HTTP response handling
-│   │   ├── TemplateEngine.php # Twig template rendering
-│   │   └── ApiClient.php   # HTTP API communication
-│   ├── Command/            # CLI commands
-│   └── setup/              # Template files for project initialization
-├── pages/                  # Real user-facing pages (Twig)
-├── templates/              # Twig layouts, partials, and reusable templates
+project-root/
 ├── assets/
 │   ├── js/
-│   │   ├── components/     # React components (JSX)
-│   │   └── app.jsx         # Main React entry
-│   └── css/                # CSS (optional, Tailwind via CDN or Vite)
+│   │   ├── app.jsx                # Main React entry point
+│   │   ├── registry.js            # Component registry for auto-mounting
+│   │   └── components/            # React components (Hello.jsx, UserProfile.jsx, etc.)
+│   └── css/                       # (Optional) Tailwind or custom CSS
+├── pages/
+│   ├── index.twig                 # Main landing page (Twig)
+│   └── react.twig                 # Example page showing React integration
+├── templates/
+│   └── default.twig               # Base HTML layout (Twig)
 ├── public/
-│   └── assets/js/          # Vite build output
-├── .env                    # Config
-├── .htaccess               # Apache configuration with security headers
-├── index.php               # Main entry point
-├── vite.config.js          # Vite config
-├── package.json            # Frontend dependencies
-├── composer.json           # Composer config
-└── bin/stcms               # CLI entry point
+│   └── assets/build/app.js        # Built JS bundle (from Vite)
+├── vite.config.js                 # Vite config for building frontend assets
+├── package.json                   # NPM dependencies and scripts
+├── composer.json                  # PHP dependencies
+├── index.php                      # PHP entry point (loads Twig, routes, etc.)
+├── .env                           # Environment config (Symfony Dotenv)
+├── .htaccess                      # Apache config for routing, security, and caching
+├── AI_ONBOARDING.md               # Full AI and user onboarding guide (read this!)
+└── vendor/                        # Composer dependencies (including STCMS)
 ```
-
-## Core PHP Classes
-
-### Application.php
-Main application orchestrator that manages sessions, JWT authentication, and coordinates all components.
-
-### Router.php
-URL routing with support for exact matches, dynamic routes (`/user/{id}`), and automatic template rendering.
-
-### TemplateEngine.php
-Twig integration with custom functions:
-- `asset()` - Generate asset URLs
-- `route()` - Generate route URLs
-- `json_encode()` - JSON encoding helper
-- `is_authenticated()` - Authentication check
-
-### ApiClient.php
-HTTP API communication using Guzzle with JWT authentication support.
-
-## How It Works
-- **Twig renders main pages from `/pages/`**; React components are mounted where needed
-- **Reusable layouts/partials in `/templates/`**
-- **API data fetched via Guzzle** (with Symfony Cache)
-- **Frontend devs build React components in `/assets/js/components/`**
-- **Vite bundles JS for use in templates/pages**
-- **Config and cache are environment-driven**
-
-## Example: Hybrid Rendering
-
-Twig page (in `/pages/`):
-```twig
-{% extends 'layout.twig' %}
-{% block content %}
-<div id="user-profile-root" data-user="{{ user|json_encode }}" {% if jwt %}data-jwt="{{ jwt }}"{% endif %}></div>
-{% endblock %}
-<script src="{{ asset('js/app.js') }}"></script>
-```
-
-React entry (app.jsx):
-```jsx
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import UserProfile from './components/UserProfile';
-
-const el = document.getElementById('user-profile-root');
-if (el) {
-  const user = JSON.parse(el.dataset.user);
-  const jwt = el.dataset.jwt; // Only present if authenticated
-  createRoot(el).render(<UserProfile user={user} jwt={jwt} />);
-}
-```
-
-## Authentication Flow & Security
-- **JWT is only exposed to React if the user is authenticated** (JWT is present in PHP session).
-- **If not authenticated, no JWT is exposed**—React knows to show login or restrict access.
-- **React components use the JWT for API requests** (e.g., via Axios/fetch, in Authorization header).
-- **JWT is never generated or verified in the frontend**—all JWT logic is handled by the backend (GEMVC API).
-- **Session management and login/logout handled by PHP backend.**
-- **Best practice:** Always validate JWTs on the backend for every API request.
-
-## Setup Folder Structure
-
-The `src/setup/` folder contains all template files that get copied during project initialization:
-
-```
-src/setup/
-├── .gitignore           # Git ignore patterns
-├── .htaccess           # Apache configuration with security headers
-├── index.php           # Main entry point
-├── env.template        # Environment configuration template
-├── vite.config.js      # Vite build configuration
-├── package.json        # Frontend dependencies
-├── templates/          # Layouts, partials, reusable Twig blocks
-│   └── example.twig    # Example template
-├── pages/              # Real user-facing pages (Twig)
-│   └── index.twig      # Example landing page
-└── assets/js/
-    ├── app.jsx         # React entry point
-    └── components/
-        └── UserProfile.jsx # Example React component
-```
-
-## Benefits
-- ✅ Clean separation of backend, pages, templates, and frontend components
-- ✅ Easy for both PHP and React developers
-- ✅ Fast, SEO-friendly, and interactive
-- ✅ Works on most hosting (APCu/file cache)
-- ✅ Extensible and maintainable
-- ✅ Standardized project initialization
-- ✅ Security headers and file protection
-- ✅ Modern development workflow
-
-## For PHP Developers
-- Use `/pages/` for real pages, `/templates/` for layouts/partials
-- Fetch API data with Guzzle (and cache it)
-- Pass data to React components via JSON in the DOM
-- Expose JWT to React only if authenticated
-- Use the Router for custom route handling
-
-## For React Developers
-- Build components in `/assets/js/components/`
-- Use Vite for fast dev/build
-- Mount components anywhere in Twig pages/templates
-- Use JWT (if present) for authenticated API requests
-- Leverage the asset() function for static file URLs
-
-## CLI Commands
-
-### Initialize Project
-```bash
-vendor/bin/stcms init
-```
-Creates a new project with all necessary files and folder structure.
-
-## Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-MIT
-
-## Support
-
-- **Documentation**: `/en/docs`
-- **Issues**: GitHub Issues
-- **Discussions**: GitHub Discussions
-
-## Changelog
-
-### Version 1.0.0
-- Initial release with complete PHP framework
-- Core classes: Application, Router, Request, Response, TemplateEngine, ApiClient
-- CLI project initialization
-- Hybrid Twig/React rendering
-- Security headers and file protection
-- Standardized setup folder structure
-- Beautiful landing page template
-- Comprehensive .gitignore patterns
 
 ---
 
-**STCMS** - Making hybrid PHP/React development simple and powerful! 🚀 
+## Hybrid Rendering & Registry-based React Mounting
+
+- **Twig** renders the main HTML structure and server-side content.
+- **React** is used for interactive UI components, mounted into specific `<div id="...\"></div>` elements.
+- **Component registry** (`assets/js/registry.js`) maps DOM IDs to React components and prop parsers.
+- **app.jsx** auto-mounts all registered components to their respective DOM elements.
+- **Vite** bundles React code for production (`public/assets/build/app.js`).
+- **Tailwind CSS** (optional) for styling; **Prism.js** for code highlighting in docs/examples.
+
+---
+
+## Routing, Security, and Best Practices
+
+- **.htaccess** routes all requests to `index.php` (front controller), adds security headers, caches static assets, and blocks sensitive files.
+- **index.php** bootstraps the application, loads environment variables, initializes all core classes, and runs the app.
+- JWT/session authentication, API integration, and caching are handled server-side for security and performance.
+
+---
+
+## Philosophy
+
+- Clean separation of backend, pages, templates, and frontend components
+- Fast, SEO-friendly, and interactive
+- Works on most hosting (APCu/file cache)
+- Extensible and maintainable
+- Security headers and file protection
+- Modern development workflow
+- Easy for both PHP and React developers
+- Standardized setup and CLI project initialization
+
+---
+
+## Getting Started
+
+1. Install via Composer:
+   ```bash
+   composer require gemvc/stcms
+   ```
+2. Initialize a new project:
+   ```bash
+   php vendor/gemvc/stcms/bin/stcms init
+   ```
+3. Install frontend dependencies and build assets:
+   ```bash
+   npm install
+   npm run build
+   ```
+4. Configure environment in `.env`.
+5. Start the PHP server:
+   ```bash
+   php -S localhost:8000
+   ```
+6. **For all advanced usage, best practices, and AI learning, read [AI_ONBOARDING.md](./AI_ONBOARDING.md).**
+
+---
+
+**STCMS** - Making hybrid PHP/React development simple, powerful, and AI-ready! 🚀
+

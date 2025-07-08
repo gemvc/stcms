@@ -36,7 +36,12 @@ npx vite build
 ### 4. Configure Environment
 Edit `.env` for API base URL, cache, etc.
 
-### 5. Start Developing
+### 5. Test if CMS successfully installed
+```bash
+php -S localhost:8000
+```
+
+### 6. Start Developing
 - **Pages** in `/pages/` (real user-facing pages)
 - **Templates** in `/templates/` (layouts, partials, reusable Twig blocks)
 - **React components** in `/assets/js/components/`

@@ -11,7 +11,6 @@ class MultilingualRouter extends Router
     public function __construct(array $languages)
     {
         $this->languages = $languages;
-        parent::__construct();
     }
 
     public function handle(Request $request, Application $app): Response

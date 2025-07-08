@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   root: 'assets/js',
   build: {
-    outDir: '../../public/assets/js',
+    outDir: '../build',
     emptyOutDir: true,
     rollupOptions: {
       input: {

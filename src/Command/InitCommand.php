@@ -78,13 +78,19 @@ class InitCommand extends Command
             $fs->dumpFile('pages/' . $basename, file_get_contents($pageFile));
         }
 
-        // Copy React components
-        $reactComponentContent = file_get_contents($setupDir . '/assets/js/components/UserProfile.jsx');
-        $fs->dumpFile('assets/js/components/UserProfile.jsx', $reactComponentContent);
+        // Copy all React components from setup
+        foreach (glob($setupDir . '/assets/js/components/*.jsx') as $componentFile) {
+            $basename = basename($componentFile);
+            $fs->dumpFile('assets/js/components/' . $basename, file_get_contents($componentFile));
+        }
 
         // Copy React entry point
         $reactEntryContent = file_get_contents($setupDir . '/assets/js/app.jsx');
         $fs->dumpFile('assets/js/app.jsx', $reactEntryContent);
+
+        // Copy registry.js for registry-based React mounting
+        $registryContent = file_get_contents($setupDir . '/assets/js/registry.js');
+        $fs->dumpFile('assets/js/registry.js', $registryContent);
 
         // Copy index.php
         $indexContent = file_get_contents($setupDir . '/index.php');

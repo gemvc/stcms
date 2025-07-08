@@ -1,60 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}STCMS{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between h-16">
-                <!-- Logo and Brand -->
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <a href="/" class="text-xl font-bold text-gray-800">STCMS</a>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>
+            {% block title %}STCMS
+            {% endblock %}
+        </title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-jsx.min.js"></script>
+
+    </head>
+    <body
+        class="bg-gray-50">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4">
+                <div
+                    class="flex justify-between h-16">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <a href="/" class="text-xl font-bold text-gray-800">STCMS</a>
+                        </div>
+                    </div>
+
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="/" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="/react" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">react example</a>
+                        <a href="/contact" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                        <a href="/login" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">Login</a>
+                    </div>
+
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden flex items-center">
+                        <button class="text-gray-600 hover:text-gray-900 focus:outline-none focus:text-gray-900">
+                            <svg class="h-6 w-6" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="/" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                    <a href="/react" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">react example</a>
-                    <a href="/contact" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-                    <a href="/login" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">Login</a>
-                </div>
-
-                <!-- Mobile menu button -->
-                <div class="md:hidden flex items-center">
-                    <button class="text-gray-600 hover:text-gray-900 focus:outline-none focus:text-gray-900">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-6 px-4">
-        {% block content %}{% endblock %}
-    </main>
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto py-6 px-4"> {% block content %}{% endblock %}
+            </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-12">
-        <div class="max-w-7xl mx-auto py-6 px-4">
-            <div class="text-center">
-                <p>&copy; 2024 STCMS. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+            <!-- Footer -->
+            <footer class="bg-gray-800 text-white mt-12">
+                <div class="max-w-7xl mx-auto py-6 px-4">
+                    <div class="text-center">
+                        <p>&copy; 2024 STCMS. All rights reserved.</p>
+                    </div>
+                </div>
+            </footer>
 
-    <!-- Scripts Block for React Components -->
-    {% block scripts %}
-    <script src="{{ asset('js/build/app.js') }}"></script>
-    {% endblock %}
-</body>
-</html>
+            <!-- Scripts Block for React Components -->
+            <script src="/assets/build/app.js"></script>
+        </body>
+    </html>

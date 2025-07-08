@@ -94,13 +94,17 @@ class InitCommand extends Command
         $htaccessContent = file_get_contents($setupDir . '/.htaccess');
         $fs->dumpFile('.htaccess', $htaccessContent);
 
-        // Copy Project.md
-        $projectContent = file_get_contents($setupDir . '/Project.md');
+        // Copy Project.md from root
+        $projectContent = file_get_contents(__DIR__ . '/../../Project.md');
         $fs->dumpFile('Project.md', $projectContent);
 
-        // Copy README.md
-        $readmeContent = file_get_contents($setupDir . '/README.md');
+        // Copy README.md from root
+        $readmeContent = file_get_contents(__DIR__ . '/../../README.md');
         $fs->dumpFile('README.md', $readmeContent);
+
+        // Copy AI_ONBOARDING.md from root
+        $onboardingContent = file_get_contents(__DIR__ . '/../../AI_ONBOARDING.md');
+        $fs->dumpFile('AI_ONBOARDING.md', $onboardingContent);
 
         $output->writeln('<comment>Copied setup files from src/setup/</comment>');
     }

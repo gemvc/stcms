@@ -2,10 +2,10 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Gemvc\Stcms\Core\Application;
-use Gemvc\Stcms\Core\Router;
 use Gemvc\Stcms\Core\TemplateEngine;
 use Gemvc\Stcms\Core\ApiClient;
 use Symfony\Component\Dotenv\Dotenv;
+use Gemvc\Stcms\Core\MultilingualRouter;
 
 // Load environment variables
 $dotenv = new Dotenv();
@@ -17,7 +17,7 @@ $templateEngine = new TemplateEngine([
     __DIR__ . '/pages',
     __DIR__ . '/templates',
 ]);
-$router = new Router();
+$router = new MultilingualRouter(['en']);
 
 // Create and run the application
 $app = new Application($router, $templateEngine, $apiClient);

@@ -3,7 +3,7 @@ namespace Gemvc\Stcms\Core;
 
 class Router
 {
-    private array $routes = [];
+    protected array $routes = [];
 
     public function get(string $path, callable $handler): void
     {
@@ -38,7 +38,7 @@ class Router
         return $this->renderTemplate($path, $request, $app);
     }
 
-    private function matchRoute(string $route, string $path, array &$params): bool
+    protected function matchRoute(string $route, string $path, array &$params): bool
     {
         // Simple pattern matching for routes like /user/{id}
         $pattern = preg_replace('/\{([^}]+)\}/', '([^/]+)', $route);

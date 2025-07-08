@@ -6,98 +6,96 @@
 <div class="container mx-auto px-4 py-8">
     <header class="text-center mb-12">
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            Welcome to STCMS
+            Willkommen bei STCMS
         </h1>
         <p class="text-xl text-gray-600">
-            Hybrid PHP/React Content Management System
+            Hybrides PHP/React Content Management System
         </p>
     </header>
 
     <main class="max-w-4xl mx-auto">
         <div class="grid md:grid-cols-2 gap-8 mb-12">
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Server-Side Rendering</h2>
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Server-seitiges Rendering</h2>
                 <p class="text-gray-600 mb-4">
-                    Built with PHP and Twig templates for fast initial page loads and SEO optimization.
+                    Entwickelt mit PHP und Twig-Templates für schnelle initiale Seitenladezeiten und SEO-Optimierung.
                 </p>
                 <ul class="text-sm text-gray-500 space-y-1">
-                    <li>• SEO-friendly server-side rendering</li>
-                    <li>• Fast initial page loads</li>
-                    <li>• Secure authentication handling</li>
+                    <li>• SEO-freundliches server-seitiges Rendering</li>
+                    <li>• Schnelle initiale Seitenladezeiten</li>
+                    <li>• Sichere Authentifizierungsbehandlung</li>
                 </ul>
             </div>
 
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Client-Side Interactivity</h2>
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Client-seitige Interaktivität</h2>
                 <p class="text-gray-600 mb-4">
-                    React components for dynamic user interfaces and enhanced user experience.
+                    React-Komponenten für dynamische Benutzeroberflächen und verbesserte Benutzererfahrung.
                 </p>
                 <ul class="text-sm text-gray-500 space-y-1">
-                    <li>• Interactive React components</li>
-                    <li>• Real-time updates</li>
-                    <li>• Modern UI/UX</li>
+                    <li>• Interaktive React-Komponenten</li>
+                    <li>• Echtzeit-Updates</li>
+                    <li>• Moderne UI/UX</li>
                 </ul>
             </div>
         </div>
 
         {% if is_authenticated() %}
             <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-800">User Profile</h2>
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Benutzerprofil</h2>
                 <div id="user-profile-root" 
                      data-user="{{ user|json_encode }}" 
                      data-jwt="{{ jwt }}">
-                    <!-- React component will render here -->
+                    <!-- React-Komponente wird hier gerendert -->
                 </div>
             </div>
         {% else %}
             <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Authentication</h2>
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Authentifizierung</h2>
                 <p class="text-gray-600 mb-4">
-                    JWT tokens are managed securely on the server side and only exposed to React components when authenticated.
+                    JWT-Token werden sicher auf der Server-Seite verwaltet und nur an React-Komponenten weitergegeben, wenn der Benutzer authentifiziert ist.
                 </p>
                 <div class="bg-blue-50 p-4 rounded">
                     <p class="text-sm text-blue-800">
-                        <strong>Security Note:</strong> JWT tokens are stored in PHP sessions and only passed to React components when the user is authenticated.
+                        <strong>Sicherheitshinweis:</strong> JWT-Token werden in PHP-Sessions gespeichert und nur an React-Komponenten weitergegeben, wenn der Benutzer authentifiziert ist.
                     </p>
                 </div>
             </div>
         {% endif %}
 
         <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Getting Started</h2>
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Erste Schritte</h2>
             <div class="space-y-4">
                 <div class="flex items-start space-x-3">
                     <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">1</span>
                     <div>
-                        <h3 class="font-medium text-gray-800">Install Dependencies</h3>
-                        <p class="text-sm text-gray-600">Run <code class="bg-gray-100 px-1 rounded">npm install</code> to install frontend dependencies.</p>
+                        <h3 class="font-medium text-gray-800">Abhängigkeiten installieren</h3>
+                        <p class="text-sm text-gray-600">Führen Sie <code class="bg-gray-100 px-1 rounded">npm install</code> aus, um Frontend-Abhängigkeiten zu installieren.</p>
                     </div>
                 </div>
                 <div class="flex items-start space-x-3">
                     <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">2</span>
                     <div>
-                        <h3 class="font-medium text-gray-800">Build Assets</h3>
-                        <p class="text-sm text-gray-600">Run <code class="bg-gray-100 px-1 rounded">npx vite build</code> to compile React components.</p>
+                        <h3 class="font-medium text-gray-800">Assets erstellen</h3>
+                        <p class="text-sm text-gray-600">Führen Sie <code class="bg-gray-100 px-1 rounded">npx vite build</code> aus, um React-Komponenten zu kompilieren.</p>
                     </div>
                 </div>
                 <div class="flex items-start space-x-3">
                     <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">3</span>
                     <div>
-                        <h3 class="font-medium text-gray-800">Configure API</h3>
-                        <p class="text-sm text-gray-600">Edit <code class="bg-gray-100 px-1 rounded">.env</code> to set your API base URL.</p>
+                        <h3 class="font-medium text-gray-800">API konfigurieren</h3>
+                        <p class="text-sm text-gray-600">Bearbeiten Sie <code class="bg-gray-100 px-1 rounded">.env</code>, um Ihre API-Basis-URL festzulegen.</p>
                     </div>
                 </div>
                 <div class="flex items-start space-x-3">
                     <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">4</span>
                     <div>
-                        <h3 class="font-medium text-gray-800">Start Developing</h3>
-                        <p class="text-sm text-gray-600">Create Twig templates and React components to build your application.</p>
+                        <h3 class="font-medium text-gray-800">Entwicklung beginnen</h3>
+                        <p class="text-sm text-gray-600">Erstellen Sie Twig-Templates und React-Komponenten, um Ihre Anwendung zu entwickeln.</p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 </div>
-
-<script src="{{ asset('js/app.js') }}"></script>
 {% endblock %} 

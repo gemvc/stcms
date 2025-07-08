@@ -1,0 +1,254 @@
+{% extends "default.twig" %}
+
+{% block title %}React Components in Twig - STCMS Examples
+{% endblock %}
+
+{% block content %}
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                React Components in Twig
+            </h1>
+            <p class="text-xl text-gray-600">
+                Learn how to integrate React components with Twig templates
+            </p>
+        </header>
+
+        <main
+            class="max-w-6xl mx-auto space-y-12">
+            <!-- How It Works Section -->
+            <div class="bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-semibold mb-6 text-gray-800">How It Works</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Server-Side (Twig)</h3>
+                        <ul class="space-y-2 text-gray-600">
+                            <li>• Twig renders the initial HTML structure</li>
+                            <li>• React components are embedded as empty divs</li>
+                            <li>• Data is passed via data attributes</li>
+                            <li>• JWT tokens are securely managed server-side</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Client-Side (React)</h3>
+                        <ul class="space-y-2 text-gray-600">
+                            <li>• React components hydrate the empty divs</li>
+                            <li>• Components read data from data attributes</li>
+                            <li>• Interactive functionality is added</li>
+                            <li>• Real-time updates and state management</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Example -->
+            <div class="bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-semibold mb-6 text-gray-800">Basic Example: Hello React!</h2>
+                <p class="text-gray-600 mb-6">
+                    This example shows a simple Hello React component that demonstrates the basic integration pattern.
+                </p>
+
+                <div class="bg-gray-50 p-4 rounded mb-6">
+                    <h4 class="font-semibold mb-2">Twig Template Code:</h4>
+                    <pre><code class="language-html">&lt;div id="hello-root"&gt;&lt;/div&gt;</code></pre>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded mb-6">
+                    <h4 class="font-semibold mb-2">React Component Code in assets/js/components/Hello.jsx:</h4>
+                    <pre><code class="language-jsx">import React from 'react';
+
+export default function Hello() &#123;
+  return (
+    &lt;div style=&#123;&#123;padding: '1em', background: '#e0f7fa', borderRadius: '8px'&#125;&#125;&gt;Hello from React Component in assets/js/components/Hello.jsx!&lt;/div&gt;
+  );
+&#125;</code></pre>
+                </div>
+
+                <!-- Live Example -->
+                <div class="border-2 border-dashed border-gray-300 p-6 rounded">
+                    <h4 class="font-semibold mb-4">Live Example:</h4>
+                    <div id="hello-root"></div>
+                </div>
+            </div>
+
+            <!-- User Profile Example -->
+            <div class="bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-semibold mb-6 text-gray-800">Advanced Example: User Profile in assets/js/components/UserProfile.jsx</h2>
+                <p class="text-gray-600 mb-6">
+                    This example shows how to pass user data and handle authentication tokens securely.
+                </p>
+
+                <div class="bg-gray-50 p-4 rounded mb-6">
+                    <h4 class="font-semibold mb-2">Twig Template Code:</h4>
+                    <pre><code class="language-html">&lt;div id="user-profile-root" 
+     data-user='{{ user|json_encode }}' 
+     data-jwt="{{ jwt }}"&gt;
+    &lt;!-- React component will render here --&gt;
+&lt;/div&gt;</code></pre>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded mb-6">
+                    <h4 class="font-semibold mb-2">React Component Code in assets/js/components/UserProfile.jsx:</h4>
+                    <pre><code class="language-jsx">function UserProfile() {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() =&gt; {
+        const userData = JSON.parse(
+            document.getElementById('user-profile-root').dataset.user
+        );
+        setUser(userData);
+        setLoading(false);
+    }, []);
+    
+    if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
+    
+    return (
+        &lt;div className="p-4 bg-green-50 rounded"&gt;
+            &lt;h3 className="text-lg font-semibold mb-2"&gt;Welcome, {user.name}!&lt;/h3&gt;
+            &lt;p&gt;Email: {user.email}&lt;/p&gt;
+            &lt;p&gt;Role: {user.role}&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+                </div>
+
+                <!-- Live Example -->
+                <div class="border-2 border-dashed border-gray-300 p-6 rounded">
+                    <h4 class="font-semibold mb-4">Live Example:</h4>
+                    <div
+                        id="user-profile-root" data-user='{"name": "John Doe", "email": "john@example.com", "role": "admin"}' data-jwt="dummy-jwt"><!-- React component will render here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Example -->
+            <div class="bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-semibold mb-6 text-gray-800">Interactive Form Example</h2>
+                <p class="text-gray-600 mb-6">
+                    This example shows how to create interactive forms with React components.
+                </p>
+
+                <div class="bg-gray-50 p-4 rounded mb-6">
+                    <h4 class="font-semibold mb-2">Twig Template Code:</h4>
+                    <pre><code class="language-html">&lt;div id="contact-form-root" 
+     data-api-endpoint="/api/contact" 
+     data-csrf-token="{{ csrf_token }}"&gt;
+    &lt;!-- React component will render here --&gt;
+&lt;/div&gt;</code></pre>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded mb-6">
+                    <h4 class="font-semibold mb-2">React Component Code:</h4>
+                    <pre><code class="language-jsx">function ContactForm() {
+    const [formData, setFormData] = useState({
+        name: '', email: '', message: ''
+    });
+    const [submitting, setSubmitting] = useState(false);
+    
+    const handleSubmit = async (e) =&gt; {
+        e.preventDefault();
+        setSubmitting(true);
+        // Form submission logic here
+    };
+    
+    return (
+        &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+            &lt;input 
+                type="text" 
+                placeholder="Name" 
+                value={formData.name}
+                onChange={(e) =&gt; setFormData({...formData, name: e.target.value})}
+                className="w-full p-2 border rounded"
+            /&gt;
+            &lt;button type="submit" disabled={submitting}&gt;
+                {submitting ? 'Sending...' : 'Send Message'}
+            &lt;/button&gt;
+        &lt;/form&gt;
+    );
+}</code></pre>
+                </div>
+
+                <!-- Live Example -->
+                <div class="border-2 border-dashed border-gray-300 p-6 rounded">
+                    <h4 class="font-semibold mb-4">Live Example:</h4>
+                    <div
+                        id="contact-form-root" data-api-endpoint="/api/contact" data-csrf-token="abc123"><!-- React component will render here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Best Practices -->
+            <div class="bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-semibold mb-6 text-gray-800">Best Practices</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Security</h3>
+                        <ul class="space-y-2 text-gray-600">
+                            <li>• Never expose sensitive data in data attributes</li>
+                            <li>• Use CSRF tokens for form submissions</li>
+                            <li>• Validate all data server-side</li>
+                            <li>• Sanitize user inputs before passing to React</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Performance</h3>
+                        <ul class="space-y-2 text-gray-600">
+                            <li>• Keep data attributes minimal</li>
+                            <li>• Use lazy loading for heavy components</li>
+                            <li>• Implement proper error boundaries</li>
+                            <li>• Cache React components when possible</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Setup Instructions -->
+            <div class="bg-blue-50 p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-semibold mb-6 text-blue-800">Setup Instructions</h2>
+                <div class="space-y-4 text-blue-700">
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded text-sm font-medium">1</span>
+                        <div>
+                            <h3 class="font-medium">Install Dependencies</h3>
+                            <p class="text-sm">Run
+                                <code class="bg-blue-100 px-1 rounded">npm install</code>
+                                to install React and build tools.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded text-sm font-medium">2</span>
+                        <div>
+                            <h3 class="font-medium">Build React Components</h3>
+                            <p class="text-sm">Run
+                                <code class="bg-blue-100 px-1 rounded">npx vite build</code>
+                                to compile your React components.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded text-sm font-medium">3</span>
+                        <div>
+                            <h3 class="font-medium">Include JavaScript</h3>
+                            <p class="text-sm">Add
+                                <code class="bg-blue-100 px-1 rounded">&lt;script src="/assets/js/app.js"&gt;&lt;/script&gt;</code>
+                                to your Twig templates.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded text-sm font-medium">4</span>
+                        <div>
+                            <h3 class="font-medium">Create Components</h3>
+                            <p class="text-sm">Write React components in
+                                <code class="bg-blue-100 px-1 rounded">assets/js/components/</code>
+                                and import them in your main app file.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- Additional React-specific scripts can go here -->
+{% endblock %}

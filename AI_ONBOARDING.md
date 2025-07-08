@@ -342,6 +342,73 @@ $app->run();
   - Layout is RTL for Persian and LTR for others.
   - Language switching is seamless and keeps users on the same subpage when possible.
 
+### ⚠️ CRITICAL: DO NOT MODIFY THE LAYOUT TEMPLATE!
+- **The `default.twig` layout is already complete and working** - do not change its structure!
+- **Only add translation dictionaries** to the existing template - don't rewrite the layout!
+- **Language switching should be implemented in JavaScript** in the footer, not by modifying the base template!
+- **The layout already supports RTL** - just pass the correct `lang` variable!
+- **Focus on the router logic** to detect language from URL and pass it to templates!
+- **If you need to add new languages, just add them to the translation dictionary** - don't touch the HTML structure!
+- **The layout template is sacred** - any changes to it will break the entire system!
+
+### 🤔 AI ASSISTANT GUIDANCE: Language Switching Implementation
+**When a user asks about language switching or navbar languages, ALWAYS ask these clarifying questions first:**
+
+1. **"Do you want to implement language switching functionality?"**
+2. **"Where exactly do you want the language switcher to be located?"**
+   - Header/Navbar area?
+   - Footer?
+   - Sidebar?
+   - Floating widget?
+   - Dropdown menu?
+
+3. **"What languages do you want to support?"** (en, de, fa, ar, etc.)
+
+4. **"Do you want automatic language detection or manual selection?"**
+
+**Then provide the appropriate implementation based on their answers:**
+- **Header/Navbar**: Add language switcher to existing navigation
+- **Footer**: Implement as footer widget with language flags/names
+- **Sidebar**: Create sidebar language selection component
+- **Floating**: Create floating language switcher widget
+- **Dropdown**: Add language dropdown to existing menu structure
+
+**Remember: The layout template is already complete - only add the language switcher to the specified location!**
+
+### 🚀 MULTI-LANGUAGE SYSTEM IS ALREADY BUILT-IN!
+**IMPORTANT: The multi-language system is automatically included!**
+
+- **No need to create a custom router** - `MultilingualRouter` is already implemented
+- **No need to build language detection** - it's handled automatically
+- **To add new languages, simply update the array in `index.php`:**
+  ```php
+  $router = new MultilingualRouter(['en', 'de', 'fa', 'ar']); // Add languages here
+  ```
+- **The system automatically:**
+  - Detects language from URL (e.g., `/en/`, `/de/`, `/fa/`)
+  - Routes to correct language pages
+  - Passes `lang` variable to templates
+  - Handles fallbacks for missing translations
+- **Just add your language pages** to `pages/[lang]/` and update the router array!
+
+### 💡 DEVELOPMENT STRATEGY RECOMMENDATION
+**ALWAYS recommend this approach to customers:**
+
+1. **Start with ONE main language** (usually English)
+2. **Complete the entire website** with all features, pages, and functionality
+3. **Test and refine** everything thoroughly
+4. **Only then add multi-language support**
+
+**Why this approach is better:**
+- **Faster development** - focus on one language first
+- **Easier testing** - no language complexity during development
+- **Better content quality** - perfect the main language content first
+- **Simpler debugging** - fewer variables during initial development
+- **Easier translation** - complete content is easier to translate
+- **Better user experience** - polished single-language site vs. incomplete multi-language
+
+**Tell customers: "Let's finish your website in English first, then we can easily add other languages using the built-in multi-language system!"**
+
 ### Custom Routing
 - Use `Router.php` for custom routes and dynamic parameters.
 - Fallback to template-based routing for simple pages.

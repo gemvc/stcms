@@ -72,11 +72,8 @@ class InitCommand extends Command
             $fs->dumpFile('templates/' . $basename, file_get_contents($templateFile));
         }
 
-        // Copy pages
-        foreach (glob($setupDir . '/pages/*.twig') as $pageFile) {
-            $basename = basename($pageFile);
-            $fs->dumpFile('pages/' . $basename, file_get_contents($pageFile));
-        }
+        // Copy pages with multi-language structure
+        $this->copyPagesWithLanguages($fs, $setupDir, $output);
 
         // Copy all React components from setup
         foreach (glob($setupDir . '/assets/js/components/*.jsx') as $componentFile) {
@@ -113,5 +110,28 @@ class InitCommand extends Command
         $fs->dumpFile('AI_ONBOARDING.md', $onboardingContent);
 
         $output->writeln('<comment>Copied setup files from src/setup/</comment>');
+    }
+
+    private function copyPagesWithLanguages(Filesystem $fs, string $setupDir, OutputInterface $output): void
+    {
+        $pagesDir = $setupDir . '/pages';
+        
+        // Get all language directories
+        $languageDirs = glob($pagesDir . '/*', GLOB_ONLYDIR);
+        
+        foreach ($languageDirs as $langDir) {
+            $langName = basename($langDir);
+            
+            // Create language directory in user's project
+            $fs->mkdir('pages/' . $langName);
+            
+            // Copy all .twig files from this language directory
+            foreach (glob($langDir . '/*.twig') as $pageFile) {
+                $basename = basename($pageFile);
+                $fs->dumpFile('pages/' . $langName . '/' . $basename, file_get_contents($pageFile));
+            }
+            
+            $output->writeln('<comment>Copied ' . $langName . ' pages</comment>');
+        }
     }
 } 

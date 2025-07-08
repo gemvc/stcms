@@ -314,6 +314,34 @@ $app->run();
 - Add new languages via config and templates.
 - Use translation files and Twig blocks for i18n.
 
+### Multilingual Navbar Implementation (Best Practice)
+- **Pass the current language** (`lang`) from your router to every Twig template, based on the URL (e.g., `/en/`, `/fa/`, `/de/`).
+- **Define a translation dictionary** at the top of your base template (`default.twig`):
+  ```twig
+  {% set nav_labels = {
+      'en': {'howto': 'How To', 'docs': 'Documentation', 'examples': 'Examples'},
+      'de': {'howto': 'Anleitung', 'docs': 'Dokumentation', 'examples': 'Beispiele'},
+      'fa': {'howto': 'راهنما', 'docs': 'مستندات', 'examples': 'نمونه ها'}
+  } %}
+  ```
+- **Generate navbar links dynamically** using the current language:
+  ```twig
+  <a href="/{{ lang|default('en') }}/howto">{{ nav_labels[lang|default('en')].howto }}</a>
+  <a href="/{{ lang|default('en') }}/docs">{{ nav_labels[lang|default('en')].docs }}</a>
+  <a href="/{{ lang|default('en') }}/examples">{{ nav_labels[lang|default('en')].examples }}</a>
+  ```
+- **Implement a smart language switcher** in the footer using JavaScript:
+  - When a user clicks a language, update the URL to the same subpage in the new language (e.g., `/en/docs` → `/fa/docs`).
+  - If the subpage does not exist, gracefully fall back to the language’s home page (e.g., `/fa/`).
+- **Support RTL languages** by setting the `dir` attribute in the `<body>` tag:
+  ```twig
+  <body {% if lang == 'fa' %}dir="rtl"{% endif %}>
+  ```
+- **Result:**
+  - Navbar and footer are always in the correct language.
+  - Layout is RTL for Persian and LTR for others.
+  - Language switching is seamless and keeps users on the same subpage when possible.
+
 ### Custom Routing
 - Use `Router.php` for custom routes and dynamic parameters.
 - Fallback to template-based routing for simple pages.

@@ -29,6 +29,7 @@ class MultilingualRouter extends Router
         }
 
         // Check for dynamic routes (simple pattern matching)
+        $params = [];
         foreach ($this->routes[$method] ?? [] as $route => $handler) {
             if ($this->matchRoute($route, $path, $params)) {
                 $request->setRouteParams($params);
@@ -47,30 +48,52 @@ class MultilingualRouter extends Router
         // Extract language and subpath
         $pathParts = explode('/', trim($path, '/'));
         $language = $pathParts[0] ?? $this->defaultLanguage;
-        $subpath = implode('/', array_slice($pathParts, 1));
         
         // Validate language - use default language if invalid
         if (!in_array($language, $this->languages)) {
             $language = $this->defaultLanguage;
             $subpath = trim($path, '/');
+        } else {
+            $subpath = implode('/', array_slice($pathParts, 1));
         }
         
-        // Determine template name
+        // Prepare base template data
+        $data = [
+            'user' => $this->getUserData($app),
+            'jwt' => $app->getJwt(),
+            'path' => $path,
+            'request' => $request,
+            'lang' => $language,
+            'id' => null, // Initialize id
+            'get_params' => $request->getQuery(), // Add GET parameters
+        ];
+
+        // NEW: Check for dynamic "page/id" pattern
+        $subpathParts = explode('/', $subpath);
+        if (count($subpathParts) === 2 && !empty($subpathParts[0]) && !empty($subpathParts[1])) {
+            $pageName = $subpathParts[0];
+            $id = $subpathParts[1];
+            $potentialTemplate = $language . '/' . $pageName . '.twig';
+            $data['id'] = $id;
+
+            try {
+                // Attempt to render the dynamic page template
+                $content = $templateEngine->render($potentialTemplate, $data);
+                return new Response($content, 200, ['Content-Type' => 'text/html']);
+            } catch (\Exception $e) {
+                // Template didn't exist, so reset id and fall through to standard static page handling
+                $data['id'] = null;
+            }
+        }
+        
+        // STANDARD: Handle static pages and index
+        $templateName = '';
         if (empty($subpath)) {
             $templateName = $language . '/index.twig';
         } else {
             $templateName = $language . '/' . $subpath . '.twig';
         }
         
-        // Prepare template data
-        $data = [
-            'user' => $this->getUserData($app),
-            'jwt' => $app->getJwt(),
-            'path' => $path,
-            'request' => $request,
-            'lang' => $language
-        ];
-
         try {
             $content = $templateEngine->render($templateName, $data);
             return new Response($content, 200, ['Content-Type' => 'text/html']);

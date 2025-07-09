@@ -319,6 +319,84 @@ $app->run();
 - Use `ApiClient.php` for API calls (with Guzzle, JWT, and caching).
 - Use Symfony Cache (APCu/file) for performance.
 
+### 🚀 The Automatic Routing System: Dynamic Pages Made Easy
+**IMPORTANT: The router is now powerful enough to handle dynamic pages AUTOMATICALLY. You do NOT need to write custom routes in `index.php` for most cases.**
+
+The `MultilingualRouter` has been upgraded to intelligently handle two common URL patterns out-of-the-box, making development faster and keeping your `index.php` clean.
+
+#### Part 1: Automatic Dynamic Routes (e.g., `/product/{id}`)
+This is perfect for pages like blog posts, products, user profiles, etc., where you have a template and a unique identifier in the URL.
+
+**How It Works:**
+The router automatically detects a URL pattern of `/{lang}/{template_name}/{id}`.
+
+1.  **URL Request:** A user visits `http://localhost:8000/en/product/123-abc`
+2.  **Router Detection:** The router sees three parts after the language (`en`):
+    - `product` (as the template name)
+    - `123-abc` (as the ID)
+3.  **Template Matching:** It looks for a template file at `pages/en/product.twig`.
+4.  **Automatic Rendering:** If the template exists, the router renders it and **automatically passes the `id` variable** to it.
+
+**Example Implementation:**
+To create a dynamic product page, you only need to do ONE thing:
+
+1.  **Create the Twig file `pages/en/product.twig`:**
+    ```twig
+    {% extends "default.twig" %}
+
+    {% block title %}Product Details{% endblock %}
+
+    {% block content %}
+        <h1>Product Details</h1>
+        
+        {# The 'id' variable is automatically available! #}
+        {% if id %}
+            <p><strong>Product ID:</strong> {{ id }}</p>
+        {% endif %}
+    {% endblock %}
+    ```
+
+That's it! **No changes are needed in `index.php`**. The page `http://localhost:8000/en/product/some-other-id` will just work.
+
+---
+
+#### Part 2: Automatic GET Parameter Handling
+The router now automatically captures all GET parameters (the part of the URL after `?`) and makes them available in your templates.
+
+**How It Works:**
+1.  **URL Request:** A user visits `http://localhost:8000/en/product/123-abc?color=blue&ref=google`
+2.  **Router Capture:** The router separates the main path from the query string.
+3.  **Automatic Data Injection:** It passes all GET parameters to the template inside a variable called `get_params`.
+
+**Example Implementation:**
+You can access these parameters directly in any Twig template.
+
+1.  **Modify your `pages/en/product.twig` file:**
+    ```twig
+    {# ... inside the content block ... #}
+
+    {% if get_params is not empty %}
+        <div style="margin-top: 20px; padding: 15px; border: 1px solid #ddd;">
+            <h3>Query Parameters Received:</h3>
+            <ul>
+                {# Loop through all available GET parameters #}
+                {% for key, value in get_params %}
+                    <li>
+                        <strong>{{ key }}:</strong> {{ value }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    ```
+With this code, visiting `/en/product/123-abc?color=blue&ref=google` will display:
+- **Product ID:** 123-abc
+- A list containing:
+    - **color:** blue
+    - **ref:** google
+
+This covers almost all common use cases for a web application without ever needing to touch the `index.php` file for routing.
+
 ### Multi-language Support with Environment-Based Default Language
 
 **🚀 NEW: The MultilingualRouter now automatically reads the default language from your `.env` file!**
@@ -531,6 +609,15 @@ pages/
 **Q: How do I add API integration or caching?**
 > Use `ApiClient.php` for API calls and Symfony Cache for caching responses.
 
+**Q: How do I create a dynamic page like a blog post or product page?**
+> 1.  Simply create the template file, for example, `pages/en/blog.twig`.
+> 2.  The router will automatically handle URLs like `/en/blog/{post-id}`.
+> 3.  Inside `blog.twig`, you can directly use the `{{ id }}` variable to get the `{post-id}` from the URL.
+> 4.  No changes are needed in `index.php`.
+
+**Q: How do I get URL parameters (e.g., from `?key=value`)?**
+> The router automatically makes all GET parameters available in every template through the `get_params` variable. You can access them like this: `{{ get_params.key }}`.
+
 **Q: How do I add multi-language support?**
 > 1. Set `DEFAULT_LANGUAGE=en` in your `.env` file.
 > 2. Update the router array in `index.php`: `new MultilingualRouter(['en', 'de', 'fa'])`.
@@ -562,6 +649,8 @@ pages/
 | Task                        | How/Where                                      |
 |-----------------------------|------------------------------------------------|
 | Create page                 | `pages/*.twig`, extend `default.twig`          |
+| **Create dynamic page (e.g., product)** | **Create `pages/en/product.twig`. Use `{{ id }}` inside. That's it!** |
+| **Get URL GET parameters**      | **Use `{{ get_params.your_key }}` inside any Twig file.** |
 | Create template/layout      | `templates/*.twig`, use Twig blocks            |
 | Create React component      | `assets/js/components/*.jsx`, export default   |
 | Register React component    | `assets/js/registry.js`                        |

@@ -84,7 +84,7 @@ class MultilingualRouter extends Router
                 } catch (\Exception $e2) {
                     // Try 404 template
                     try {
-                        $content = $templateEngine->render('404.twig', $data);
+                        $content = $templateEngine->render($language . '/404.twig', $data);
                         return new Response($content, 404, ['Content-Type' => 'text/html']);
                     } catch (\Exception $e3) {
                         return new Response('Page not found', 404);
@@ -93,7 +93,7 @@ class MultilingualRouter extends Router
             } else {
                 // For missing subpages, go straight to 404
                 try {
-                    $content = $templateEngine->render('404.twig', $data);
+                    $content = $templateEngine->render($language . '/404.twig', $data);
                     return new Response($content, 404, ['Content-Type' => 'text/html']);
                 } catch (\Exception $e3) {
                     return new Response('Page not found', 404);

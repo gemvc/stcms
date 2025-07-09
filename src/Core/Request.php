@@ -29,7 +29,7 @@ class Request
         return $this->path;
     }
 
-    public function getQuery(string $key = null)
+    public function getQuery(?string $key = null)
     {
         if ($key === null) {
             return $this->query;
@@ -37,7 +37,7 @@ class Request
         return $this->query[$key] ?? null;
     }
 
-    public function getPost(string $key = null)
+    public function getPost(?string $key = null)
     {
         if ($key === null) {
             return $this->post;

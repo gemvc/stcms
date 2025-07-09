@@ -576,4 +576,100 @@ pages/
 
 ---
 
+## 19. Troubleshooting & Debugging Best Practices
+
+### Template Rendering Issues
+
+**Problem**: Complex Twig files fail to render even with valid syntax
+**Root Cause**: Template engine has limits with file size or complexity
+**Solution**: Use simpler, modular templates
+
+#### Debugging Strategy
+1. **Start with working examples**: Test simple pages first (`debug.twig`, minimal templates)
+2. **Incremental complexity**: Build up from minimal to complex content
+3. **File comparison**: Compare working vs. failing files to identify issues
+4. **File replacement**: Sometimes replacing entire file content is more reliable than partial edits
+
+#### Common Issues & Solutions
+
+**Issue**: Large Twig files return 404 or fail to render
+- **Solution**: Break complex templates into smaller, modular components
+- **Best Practice**: Start with minimal working content and add complexity gradually
+
+**Issue**: HTML entities (`&lt;`, `&gt;`) in templates
+- **Solution**: Replace with proper characters or use Twig's `raw` filter
+- **Example**: `{{ content|raw }}` instead of `&lt;content&gt;`
+
+**Issue**: Template syntax errors
+- **Solution**: Validate Twig syntax and check for unclosed blocks
+- **Debug**: Use simple test templates to isolate issues
+
+#### Systematic Debugging Approach
+
+1. **Establish baseline**: Test known working files first
+2. **Isolate the problem**: Create progressively simpler versions
+3. **Compare working vs. failing**: Identify the breaking point
+4. **File replacement**: Use proven working content as starting point
+5. **Incremental testing**: Add complexity back gradually
+
+#### File Complexity Guidelines
+
+**✅ Good Practices:**
+- Keep templates under 50 lines for complex pages
+- Use modular components and includes
+- Start with minimal content and build up
+- Test with simple examples first
+
+**❌ Avoid:**
+- Very large single template files (>100 lines)
+- Complex nested structures without testing
+- Adding too much content at once
+- Assuming complex templates will work without testing
+
+### Routing Debugging
+
+**Issue**: Pages return 404 when files exist
+- **Check**: File location and naming (`pages/en/page.twig`)
+- **Verify**: Router configuration and language settings
+- **Test**: Simple pages first, then complex ones
+
+**Issue**: Language-specific pages not working
+- **Check**: Language array in `MultilingualRouter` constructor
+- **Verify**: File structure (`pages/[lang]/page.twig`)
+- **Test**: Default language pages first
+
+### Performance & Reliability
+
+**Key Insight**: Complexity kills reliability
+- **Start simple**: Always begin with minimal working examples
+- **Build incrementally**: Add features one at a time
+- **Test frequently**: Verify each addition works before proceeding
+- **Have fallbacks**: Keep working versions as backups
+
+### Debugging Checklist
+
+When troubleshooting template issues:
+
+1. ✅ **Test simple pages first** (`debug.twig`, minimal templates)
+2. ✅ **Verify file exists** in correct location
+3. ✅ **Check file permissions** and encoding
+4. ✅ **Compare with working examples** to identify differences
+5. ✅ **Use file replacement** with proven working content
+6. ✅ **Test incrementally** - add complexity gradually
+7. ✅ **Clear browser cache** and use exact URLs
+8. ✅ **Check server logs** for PHP errors
+
+### Memory & Learning
+
+**Key Lessons from Debugging:**
+- **File complexity matters**: Large templates can fail even with valid syntax
+- **Systematic approach works**: Step-by-step isolation finds issues faster
+- **Working examples are gold**: Always have proven working content as reference
+- **Incremental development**: Build up from simple to complex
+- **Environment consistency**: Same setup across development and testing
+
+**Most Important Rule**: When debugging template issues, always start with the simplest possible working example and build up from there.
+
+---
+
 **Welcome, AI! You are now ready to help others build with STCMS!** 

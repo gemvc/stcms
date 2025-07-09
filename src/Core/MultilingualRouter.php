@@ -75,13 +75,23 @@ class MultilingualRouter extends Router
             $content = $templateEngine->render($templateName, $data);
             return new Response($content, 200, ['Content-Type' => 'text/html']);
         } catch (\Exception $e) {
-            // Try fallback to index template
-            try {
-                $fallbackTemplate = $language . '/index.twig';
-                $content = $templateEngine->render($fallbackTemplate, $data);
-                return new Response($content, 200, ['Content-Type' => 'text/html']);
-            } catch (\Exception $e2) {
-                // Try 404 template
+            // Only fall back to index if the subpath is empty (i.e., root)
+            if (empty($subpath)) {
+                try {
+                    $fallbackTemplate = $language . '/index.twig';
+                    $content = $templateEngine->render($fallbackTemplate, $data);
+                    return new Response($content, 200, ['Content-Type' => 'text/html']);
+                } catch (\Exception $e2) {
+                    // Try 404 template
+                    try {
+                        $content = $templateEngine->render('404.twig', $data);
+                        return new Response($content, 404, ['Content-Type' => 'text/html']);
+                    } catch (\Exception $e3) {
+                        return new Response('Page not found', 404);
+                    }
+                }
+            } else {
+                // For missing subpages, go straight to 404
                 try {
                     $content = $templateEngine->render('404.twig', $data);
                     return new Response($content, 404, ['Content-Type' => 'text/html']);

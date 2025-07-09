@@ -1,0 +1,146 @@
+{% extends "default.twig" %}
+
+{% block title %}Wie man STCMS verwendet - Vollständige Anleitung{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Wie man STCMS verwendet</h1>
+        <p class="text-xl text-gray-600">Vollständige Anleitung zum Erstellen mit STCMS - Hybrid PHP/React CMS</p>
+    </header>
+
+    <!-- Table of Contents -->
+    <div class="bg-blue-50 p-6 rounded-lg mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Inhaltsverzeichnis</h2>
+        <ul class="space-y-2 text-blue-800">
+            <li><a href="#installation" class="hover:underline">1. Installation & Einrichtung</a></li>
+            <li><a href="#project-structure" class="hover:underline">2. Projektstruktur</a></li>
+            <li><a href="#creating-pages" class="hover:underline">3. Seiten erstellen</a></li>
+            <li><a href="#creating-templates" class="hover:underline">4. Templates erstellen</a></li>
+            <li><a href="#react-components" class="hover:underline">5. React Komponenten</a></li>
+            <li><a href="#multi-language" class="hover:underline">6. Mehrsprachige Unterstützung</a></li>
+            <li><a href="#api-integration" class="hover:underline">7. API Integration</a></li>
+            <li><a href="#authentication" class="hover:underline">8. Authentifizierung & Sicherheit</a></li>
+            <li><a href="#deployment" class="hover:underline">9. Deployment</a></li>
+        </ul>
+    </div>
+
+    <!-- 1. Installation & Setup -->
+    <section id="installation" class="mb-12">
+        <h2 class="text-3xl font-semibold mb-6">1. Installation & Einrichtung</h2>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-xl font-semibold mb-4">Schnellstart</h3>
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-semibold mb-2">Schritt 1: STCMS installieren</h4>
+                    <pre><code class="language-bash">composer require gemvc/stcms</code></pre>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Schritt 2: Projekt initialisieren</h4>
+                    <pre><code class="language-bash">php vendor/gemvc/stcms/bin/stcms init</code></pre>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Schritt 3: Frontend-Abhängigkeiten installieren</h4>
+                    <pre><code class="language-bash">npm install</code></pre>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Schritt 4: Assets erstellen</h4>
+                    <pre><code class="language-bash">npm run build</code></pre>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Schritt 5: Entwicklungsserver starten</h4>
+                    <pre><code class="language-bash">php -S localhost:8000</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-4">Was Sie erhalten</h3>
+            <ul class="space-y-2 text-gray-700">
+                <li>• <strong>Symfony Cache</strong> - Modernes Caching (APCu/Datei)</li>
+                <li>• <strong>Symfony Dotenv</strong> - Umgebungsverwaltung</li>
+                <li>• <strong>Guzzle HTTP</strong> - API-Integration</li>
+                <li>• <strong>Twig Templates</strong> - Server-seitiges Rendering</li>
+                <li>• <strong>Vite Build System</strong> - React-Bundling</li>
+                <li>• <strong>Sicherheits-Header</strong> - Apache-Konfiguration</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 2. Project Structure -->
+    <section id="project-structure" class="mb-12">
+        <h2 class="text-3xl font-semibold mb-6">2. Projektstruktur</h2>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-4">Verzeichnislayout</h3>
+            <pre><code class="language-plaintext">project-root/
+├── assets/
+│   ├── js/
+│   │   ├── app.jsx                # Haupt-React-Einstiegspunkt
+│   │   ├── registry.js            # Komponenten-Registry
+│   │   └── components/            # React-Komponenten
+│   └── css/                       # Styles
+├── pages/
+│   ├── index.twig                 # Landing Page
+│   └── react.twig                 # React-Beispiele
+├── templates/
+│   └── default.twig               # Basis-Layout
+├── public/
+│   └── assets/build/app.js        # Erstelltes JS-Bundle
+├── vite.config.js                 # Vite-Konfiguration
+├── package.json                   # NPM-Abhängigkeiten
+├── composer.json                  # PHP-Abhängigkeiten
+├── index.php                      # PHP-Einstiegspunkt
+├── .env                           # Umgebungskonfiguration
+├── .htaccess                      # Apache-Konfiguration
+└── vendor/                        # Composer-Abhängigkeiten</code></pre>
+        </div>
+    </section>
+
+    <!-- 3. Creating Pages -->
+    <section id="creating-pages" class="mb-12">
+        <h2 class="text-3xl font-semibold mb-6">3. Seiten erstellen</h2>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-xl font-semibold mb-4">Grundlegendes Seitenbeispiel</h3>
+            <div class="bg-gray-50 p-4 rounded mb-4">
+                <h4 class="font-semibold mb-2">Datei: pages/about.twig</h4>
+                <pre><code class="language-twig">{% extends "default.twig" %}
+
+{% block title %}Über uns{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Über unser Unternehmen</h1>
+    
+    <div class="prose lg:prose-xl">
+        <p>Dies ist der Inhalt unserer Über-uns-Seite...</p>
+    </div>
+    
+    <!-- React-Komponenten-Mount-Point -->
+    <div id="team-members-root"></div>
+</div>
+{% endblock %}</code></pre>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-4">Seiten-Best-Practices</h3>
+            <ul class="space-y-2 text-gray-700">
+                <li>• Erweitern Sie immer <code>default.twig</code> für konsistentes Layout</li>
+                <li>• Verwenden Sie semantisches HTML und Tailwind-Klassen für Styling</li>
+                <li>• Fügen Sie React-Mount-Points mit eindeutigen IDs hinzu</li>
+                <li>• Behalten Sie Seiten fokussiert auf Inhalt, nicht auf Logik</li>
+                <li>• Verwenden Sie beschreibende Dateinamen (z.B. <code>contact.twig</code>)</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Success Message -->
+    <div class="mt-8 p-4 bg-green-100 rounded">
+        <h2 class="text-2xl font-semibold mb-2 text-green-800">Erfolg!</h2>
+        <p class="text-green-700">Dies ist eine funktionierende Version der How-Seite. Das Problem lag wahrscheinlich an der Komplexität der ursprünglichen Datei.</p>
+    </div>
+</div>
+{% endblock %} 

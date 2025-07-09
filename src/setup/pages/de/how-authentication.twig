@@ -1,0 +1,129 @@
+{% extends "default.twig" %}
+
+{% block title %}Authentifizierung & Sicherheit - STCMS Anleitung{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Authentifizierung & Sicherheit</h1>
+        <p class="text-xl text-gray-600">Vollständige Anleitung zum STCMS-Sicherheitsmodell und zur Authentifizierung</p>
+    </header>
+
+    <!-- JWT Security Model -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">JWT-Sicherheitsmodell</h2>
+        <ul class="space-y-2 text-gray-700">
+            <li>• <strong>JWT wird nur an React weitergegeben, wenn authentifiziert</strong></li>
+            <li>• <strong>Alle sensiblen Logiken werden serverseitig behandelt</strong></li>
+            <li>• <strong>React verwendet JWT für API-Anfragen</strong></li>
+            <li>• <strong>Sitzungsverwaltung wird vom PHP-Backend behandelt</strong></li>
+        </ul>
+    </div>
+
+    <!-- Security Headers -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Sicherheits-Header (.htaccess)</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <pre><code class="language-apache"># Sicherheits-Header
+&lt;IfModule mod_headers.c&gt;
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+&lt;/IfModule&gt;
+
+# Dateischutz
+&lt;Files ".env"&gt;
+    Order allow,deny
+    Deny from all
+&lt;/Files&gt;</code></pre>
+        </div>
+        <p class="text-gray-700">Diese Header schützen vor häufigen Web-Schwachstellen und verhindern den Zugriff auf sensible Dateien.</p>
+    </div>
+
+    <!-- Authentication Check -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Authentifizierungsprüfung</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Twig-Template</h3>
+            <pre><code class="language-twig">{% if is_authenticated() %}
+    &lt;div id="user-profile-root" data-user="{{ user|json_encode }}" data-jwt="{{ jwt }}"&gt;&lt;/div&gt;
+{% else %}
+    &lt;div class="bg-blue-50 p-4 rounded"&gt;
+        &lt;p&gt;Bitte melden Sie sich an, um Ihr Profil zu sehen.&lt;/p&gt;
+    &lt;/div&gt;
+{% endif %}</code></pre>
+        </div>
+        <p class="text-gray-700">Verwenden Sie die <code>is_authenticated()</code>-Funktion, um den Authentifizierungsstatus des Benutzers in Templates zu prüfen.</p>
+    </div>
+
+    <!-- React Authentication -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">React-Authentifizierung</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Komponenten-Beispiel</h3>
+            <pre><code class="language-jsx">import React, { useState, useEffect } from 'react';
+
+export default function UserProfile() {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        // Benutzerdaten aus data-Attributen abrufen
+        const userData = JSON.parse(
+            document.getElementById('user-profile-root').dataset.user
+        );
+        setUser(userData);
+        setLoading(false);
+    }, []);
+    
+    if (loading) return &lt;div&gt;Laden...&lt;/div&gt;;
+    
+    return (
+        &lt;div className="p-4 bg-green-50 rounded"&gt;
+            &lt;h3 className="text-lg font-semibold mb-2"&gt;Willkommen, {user.name}!&lt;/h3&gt;
+            &lt;p&gt;E-Mail: {user.email}&lt;/p&gt;
+            &lt;p&gt;Rolle: {user.role}&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+        </div>
+        <p class="text-gray-700">React-Komponenten erhalten Authentifizierungsdaten über data-Attribute und JWT-Token.</p>
+    </div>
+
+    <!-- API Security -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">API-Sicherheit</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">PHP-Backend</h3>
+            <pre><code class="language-php">use Gemvc\Stcms\Core\ApiClient;
+
+$apiClient = new ApiClient($_ENV['API_BASE_URL']);
+
+// POST-Anfrage mit JWT
+$response = $apiClient->post('/users', [
+    'name' => 'John Doe',
+    'email' => 'john@example.com'
+], $jwt);
+
+// PUT-Anfrage
+$updated = $apiClient->put('/users/123', [
+    'name' => 'Jane Doe'
+], $jwt);</code></pre>
+        </div>
+        <p class="text-gray-700">Übergeben Sie immer JWT-Token für authentifizierte API-Anfragen, um die Sicherheit zu gewährleisten.</p>
+    </div>
+
+    <!-- Best Practices -->
+    <div class="bg-green-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-green-800">Sicherheits-Best-Practices</h2>
+        <ul class="space-y-2 text-green-700">
+            <li>• <strong>Validieren Sie JWTs immer serverseitig</strong> für jede API-Anfrage</li>
+            <li>• <strong>Generieren oder verifizieren Sie JWTs niemals im Frontend</strong></li>
+            <li>• <strong>Verwenden Sie HTTPS in der Produktion</strong> zum Schutz von Daten während der Übertragung</li>
+            <li>• <strong>Implementieren Sie eine ordnungsgemäße Sitzungsverwaltung</strong> im PHP-Backend</li>
+            <li>• <strong>Aktualisieren Sie Abhängigkeiten regelmäßig</strong> um Sicherheitslücken zu patchen</li>
+            <li>• <strong>Verwenden Sie Umgebungsvariablen</strong> für sensible Konfigurationen</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

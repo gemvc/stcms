@@ -1,0 +1,179 @@
+{% extends "default.twig" %}
+
+{% block title %}Multi-Language Support - STCMS Guide{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Multi-Language Support</h1>
+        <p class="text-xl text-gray-600">Complete guide to implementing multi-language support in STCMS</p>
+    </header>
+
+    <!-- Language Detection -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Language Detection</h2>
+        <p class="text-gray-700 mb-4">STCMS automatically detects language from URL patterns:</p>
+        <ul class="space-y-2 text-gray-700">
+            <li>• <code>/en/</code> - English</li>
+            <li>• <code>/de/</code> - German</li>
+            <li>• <code>/fa/</code> - Persian (RTL)</li>
+            <li>• <code>/ar/</code> - Arabic (RTL)</li>
+        </ul>
+    </div>
+
+    <!-- Environment Configuration -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Environment Configuration</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">File: .env</h3>
+            <pre><code class="language-env">API_BASE_URL=http://localhost:80
+CACHE_DRIVER=apcu
+DEFAULT_LANGUAGE=en</code></pre>
+        </div>
+        <p class="text-gray-700">Set your default language in the environment file. The router will use this as fallback.</p>
+    </div>
+
+    <!-- Router Configuration -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Router Configuration</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">File: index.php</h3>
+            <pre><code class="language-php">// Configure supported languages
+$router = new MultilingualRouter(['en', 'de', 'fa', 'ar']);
+
+// The router automatically reads DEFAULT_LANGUAGE from .env
+// and uses it as fallback for invalid languages</code></pre>
+        </div>
+        <p class="text-gray-700">Add your supported languages to the router array. Invalid languages will fall back to the default.</p>
+    </div>
+
+    <!-- Template Implementation -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Template Implementation</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Language-Specific Content</h3>
+            <pre><code class="language-twig">{% if lang == 'de' %}
+    &lt;h1&gt;Willkommen bei STCMS&lt;/h1&gt;
+    &lt;p&gt;Hybrides PHP/React Content Management System&lt;/p&gt;
+{% elseif lang == 'fa' %}
+    &lt;h1&gt;به STCMS خوش آمدید&lt;/h1&gt;
+    &lt;p&gt;سیستم مدیریت محتوای هیبریدی PHP/React&lt;/p&gt;
+{% else %}
+    &lt;h1&gt;Welcome to STCMS&lt;/h1&gt;
+    &lt;p&gt;Hybrid PHP/React Content Management System&lt;/p&gt;
+{% endif %}</code></pre>
+        </div>
+        <p class="text-gray-700">Use the <code>lang</code> variable to conditionally display content based on the current language.</p>
+    </div>
+
+    <!-- File Structure -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">File Structure</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <pre><code class="language-plaintext">pages/
+├── en/                    # Default language (from .env)
+│   ├── index.twig
+│   ├── about.twig
+│   └── contact.twig
+├── de/                    # German
+│   ├── index.twig
+│   ├── about.twig
+│   └── contact.twig
+├── fa/                    # Persian
+│   ├── index.twig
+│   ├── about.twig
+│   └── contact.twig
+└── ar/                    # Arabic
+    ├── index.twig
+    ├── about.twig
+    └── contact.twig</code></pre>
+        </div>
+        <p class="text-gray-700">Organize your templates by language in separate folders under <code>pages/</code>.</p>
+    </div>
+
+    <!-- Language Switching -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Language Switching</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">JavaScript Implementation</h3>
+            <pre><code class="language-javascript">function switchLanguage(newLang) {
+    const currentPath = window.location.pathname;
+    const pathWithoutLang = currentPath.replace(/^\/(en|de|fa|ar)\//, '/');
+    const newUrl = '/' + newLang + pathWithoutLang;
+    window.location.href = newUrl;
+}</code></pre>
+        </div>
+        <p class="text-gray-700">Implement language switching in your frontend to allow users to change languages.</p>
+    </div>
+
+    <!-- RTL Support -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">RTL Language Support</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">HTML Template</h3>
+            <pre><code class="language-twig">&lt;body {% if lang in ['fa', 'ar'] %}dir="rtl"{% endif %}&gt;
+    &lt;!-- Your content here --&gt;
+&lt;/body&gt;</code></pre>
+        </div>
+        <p class="text-gray-700">Set the <code>dir</code> attribute for RTL languages like Persian and Arabic.</p>
+    </div>
+
+    <!-- URL Examples -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">URL Examples</h2>
+        <div class="bg-blue-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">How URLs Work</h3>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b">
+                        <th class="text-left py-2">URL</th>
+                        <th class="text-left py-2">Language</th>
+                        <th class="text-left py-2">Template</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b">
+                        <td class="py-2"><code>/</code></td>
+                        <td class="py-2">en (default)</td>
+                        <td class="py-2"><code>en/index.twig</code></td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="py-2"><code>/en/about</code></td>
+                        <td class="py-2">en</td>
+                        <td class="py-2"><code>en/about.twig</code></td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="py-2"><code>/de/contact</code></td>
+                        <td class="py-2">de</td>
+                        <td class="py-2"><code>de/contact.twig</code></td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="py-2"><code>/fa/</code></td>
+                        <td class="py-2">fa</td>
+                        <td class="py-2"><code>fa/index.twig</code></td>
+                    </tr>
+                    <tr>
+                        <td class="py-2"><code>/invalid/page</code></td>
+                        <td class="py-2">en (fallback)</td>
+                        <td class="py-2"><code>en/page.twig</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-gray-700">The router automatically detects language from URL and falls back to default for invalid languages.</p>
+    </div>
+
+    <!-- Best Practices -->
+    <div class="bg-green-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-green-800">Multi-Language Best Practices</h2>
+        <ul class="space-y-2 text-green-700">
+            <li>• <strong>Start with one language</strong> and add others gradually</li>
+            <li>• <strong>Use consistent naming</strong> for files across languages</li>
+            <li>• <strong>Test all languages</strong> before deployment</li>
+            <li>• <strong>Consider cultural differences</strong> in content and layout</li>
+            <li>• <strong>Use professional translation</strong> for important content</li>
+            <li>• <strong>Implement language detection</strong> based on user preferences</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

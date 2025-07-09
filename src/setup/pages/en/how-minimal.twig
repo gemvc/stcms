@@ -1,0 +1,26 @@
+{% extends "default.twig" %}
+
+{% block title %}How To Use STCMS{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">How To Use STCMS</h1>
+    <p class="text-xl text-gray-600 mb-8">Complete guide to building with STCMS</p>
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-4">Quick Start</h2>
+        <ol class="space-y-2 text-gray-700">
+            <li>1. Install STCMS: <code>composer require gemvc/stcms</code></li>
+            <li>2. Initialize project: <code>php vendor/gemvc/stcms/bin/stcms init</code></li>
+            <li>3. Install dependencies: <code>npm install</code></li>
+            <li>4. Build assets: <code>npm run build</code></li>
+            <li>5. Start server: <code>php -S localhost:8000</code></li>
+        </ol>
+    </div>
+    
+    <div class="mt-8 p-4 bg-green-100 rounded">
+        <h2 class="text-2xl font-semibold mb-2 text-green-800">Success!</h2>
+        <p class="text-green-700">This minimal version should work if the issue is with file complexity.</p>
+    </div>
+</div>
+{% endblock %} 

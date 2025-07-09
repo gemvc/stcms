@@ -1,0 +1,146 @@
+{% extends "default.twig" %}
+
+{% block title %}React Komponenten - STCMS Anleitung{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">React Komponenten</h1>
+        <p class="text-xl text-gray-600">Vollständige Anleitung zum Erstellen und Verwenden von React-Komponenten in STCMS</p>
+    </header>
+
+    <!-- Creating Components -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Eine React-Komponente erstellen</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Datei: assets/js/components/UserProfile.jsx</h3>
+            <pre><code class="language-jsx">import React, { useState, useEffect } from 'react';
+
+export default function UserProfile() {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        // Benutzerdaten aus data-Attributen abrufen
+        const userData = JSON.parse(
+            document.getElementById('user-profile-root').dataset.user
+        );
+        setUser(userData);
+        setLoading(false);
+    }, []);
+    
+    if (loading) return &lt;div&gt;Laden...&lt;/div&gt;;
+    
+    return (
+        &lt;div className="p-4 bg-green-50 rounded"&gt;
+            &lt;h3 className="text-lg font-semibold mb-2"&gt;Willkommen, {user.name}!&lt;/h3&gt;
+            &lt;p&gt;E-Mail: {user.email}&lt;/p&gt;
+            &lt;p&gt;Rolle: {user.role}&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+        </div>
+        <p class="text-gray-700">Erstellen Sie React-Komponenten im <code>assets/js/components/</code>-Verzeichnis und exportieren Sie sie als Standard.</p>
+    </div>
+
+    <!-- Registering Components -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Komponenten registrieren</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Datei: assets/js/registry.js</h3>
+            <pre><code class="language-javascript">import UserProfile from './components/UserProfile';
+import ContactForm from './components/ContactForm';
+
+export const registry = {
+    'user-profile-root': {
+        component: UserProfile,
+        getProps: (el) => ({
+            user: JSON.parse(el.dataset.user),
+            jwt: el.dataset.jwt
+        })
+    },
+    'contact-form-root': {
+        component: ContactForm,
+        getProps: (el) => ({
+            apiEndpoint: el.dataset.apiEndpoint,
+            csrfToken: el.dataset.csrfToken
+        })
+    }
+};</code></pre>
+        </div>
+        <p class="text-gray-700">Registrieren Sie Ihre Komponenten in der Registry mit ihrer Mount-Point-ID und Prop-Parsing-Funktion.</p>
+    </div>
+
+    <!-- Using Components in Twig -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Komponenten in Twig verwenden</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Twig-Template</h3>
+            <pre><code class="language-twig">&lt;div id="user-profile-root" 
+     data-user='{{ user|json_encode }}' 
+     data-jwt="{{ jwt }}"&gt;
+    &lt;!-- React-Komponente wird hier gerendert --&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+        <p class="text-gray-700">Fügen Sie Mount-Points mit eindeutigen IDs hinzu und übergeben Sie Daten über data-Attribute.</p>
+    </div>
+
+    <!-- Component Best Practices -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Komponenten-Best-Practices</h2>
+        <ul class="space-y-2 text-gray-700">
+            <li>• <strong>Verwenden Sie eindeutige IDs</strong> für jeden Komponenten-Mount-Point</li>
+            <li>• <strong>Übergeben Sie Daten über data-Attribute</strong> von Twig an React</li>
+            <li>• <strong>Behandeln Sie Ladezustände</strong> in Ihren Komponenten</li>
+            <li>• <strong>Verwenden Sie TypeScript</strong> für bessere Typsicherheit (optional)</li>
+            <li>• <strong>Behalten Sie Komponenten fokussiert</strong> auf einzelne Verantwortlichkeiten</li>
+            <li>• <strong>Testen Sie Komponenten</strong> unabhängig</li>
+        </ul>
+    </div>
+
+    <!-- Data Flow -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Datenfluss</h2>
+        <div class="bg-blue-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Wie Daten fließen</h3>
+            <ol class="space-y-2 text-blue-800">
+                <li>1. <strong>PHP-Backend</strong> - Verarbeitet Daten und Authentifizierung</li>
+                <li>2. <strong>Twig-Template</strong> - Rendert HTML mit data-Attributen</li>
+                <li>3. <strong>React-Komponente</strong> - Liest Daten aus DOM-Attributen</li>
+                <li>4. <strong>Benutzerinteraktion</strong> - Komponente aktualisiert sich basierend auf Benutzeraktionen</li>
+            </ol>
+        </div>
+        <p class="text-gray-700">Daten fließen von PHP → Twig → React und gewährleisten serverseitige Sicherheit mit clientseitiger Interaktivität.</p>
+    </div>
+
+    <!-- Building and Development -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Erstellen und Entwicklung</h2>
+        <div class="space-y-4">
+            <div>
+                <h3 class="font-semibold mb-2">Entwicklungsmodus</h3>
+                <pre><code class="language-bash">npm run dev</code></pre>
+                <p class="text-gray-700">Starten Sie den Vite-Dev-Server für Hot-Reloading während der Entwicklung.</p>
+            </div>
+            <div>
+                <h3 class="font-semibold mb-2">Produktions-Build</h3>
+                <pre><code class="language-bash">npm run build</code></pre>
+                <p class="text-gray-700">Erstellen Sie optimierte Assets für die Produktionsbereitstellung.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Common Patterns -->
+    <div class="bg-green-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-green-800">Häufige Komponenten-Muster</h2>
+        <ul class="space-y-2 text-green-700">
+            <li>• <strong>Formular-Komponenten</strong> - Kontaktformulare, Benutzerregistrierung</li>
+            <li>• <strong>Datenanzeige</strong> - Benutzerprofile, Produktlisten</li>
+            <li>• <strong>Interaktive Widgets</strong> - Suche, Filter, Paginierung</li>
+            <li>• <strong>Echtzeit-Updates</strong> - Chat, Benachrichtigungen, Live-Daten</li>
+            <li>• <strong>Modal-Dialoge</strong> - Bestätigungen, detaillierte Ansichten</li>
+            <li>• <strong>Navigation</strong> - Dynamische Menüs, Breadcrumbs</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

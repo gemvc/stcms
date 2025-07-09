@@ -1,0 +1,75 @@
+{% extends "default.twig" %}
+
+{% block title %}Installation & Setup - STCMS Guide{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Installation & Setup</h1>
+        <p class="text-xl text-gray-600">Complete guide to installing and setting up STCMS</p>
+    </header>
+
+    <!-- Quick Start -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Quick Start</h2>
+        <div class="space-y-4">
+            <div>
+                <h3 class="font-semibold mb-2">Step 1: Install STCMS</h3>
+                <pre><code class="language-bash">composer require gemvc/stcms</code></pre>
+            </div>
+            <div>
+                <h3 class="font-semibold mb-2">Step 2: Initialize Project</h3>
+                <pre><code class="language-bash">php vendor/gemvc/stcms/bin/stcms init</code></pre>
+            </div>
+            <div>
+                <h3 class="font-semibold mb-2">Step 3: Install Frontend Dependencies</h3>
+                <pre><code class="language-bash">npm install</code></pre>
+            </div>
+            <div>
+                <h3 class="font-semibold mb-2">Step 4: Build Assets</h3>
+                <pre><code class="language-bash">npm run build</code></pre>
+            </div>
+            <div>
+                <h3 class="font-semibold mb-2">Step 5: Start Development Server</h3>
+                <pre><code class="language-bash">php -S localhost:8000</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- What You Get -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">What You Get</h2>
+        <ul class="space-y-2 text-gray-700">
+            <li>• <strong>Symfony Cache</strong> - Modern caching (APCu/file)</li>
+            <li>• <strong>Symfony Dotenv</strong> - Environment management</li>
+            <li>• <strong>Guzzle HTTP</strong> - API integration</li>
+            <li>• <strong>Twig Templates</strong> - Server-side rendering</li>
+            <li>• <strong>Vite Build System</strong> - React bundling</li>
+            <li>• <strong>Security Headers</strong> - Apache configuration</li>
+        </ul>
+    </div>
+
+    <!-- Environment Setup -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Environment Configuration</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">File: .env</h3>
+            <pre><code class="language-env">API_BASE_URL=http://localhost:80
+CACHE_DRIVER=apcu
+DEFAULT_LANGUAGE=en</code></pre>
+        </div>
+        <p class="text-gray-700">Configure your environment variables for API endpoints, caching, and default language.</p>
+    </div>
+
+    <!-- Troubleshooting -->
+    <div class="bg-yellow-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-yellow-800">Common Issues</h2>
+        <ul class="space-y-2 text-yellow-700">
+            <li>• <strong>Composer not found:</strong> Install Composer first</li>
+            <li>• <strong>Node.js required:</strong> Install Node.js for frontend builds</li>
+            <li>• <strong>PHP 8.0+:</strong> Ensure you have PHP 8.0 or higher</li>
+            <li>• <strong>APCu extension:</strong> Install for better performance (optional)</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

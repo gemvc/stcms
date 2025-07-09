@@ -1,0 +1,151 @@
+{% extends "default.twig" %}
+
+{% block title %}API Integration - STCMS Anleitung{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">API Integration</h1>
+        <p class="text-xl text-gray-600">Vollständige Anleitung zur Integration von APIs mit STCMS</p>
+    </header>
+
+    <!-- Using ApiClient -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">ApiClient verwenden</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">PHP-Backend</h3>
+            <pre><code class="language-php">use Gemvc\Stcms\Core\ApiClient;
+
+$apiClient = new ApiClient($_ENV['API_BASE_URL']);
+
+// GET-Anfrage
+$users = $apiClient->get('/users', ['page' => 1]);
+
+// POST-Anfrage mit JWT
+$response = $apiClient->post('/users', [
+    'name' => 'John Doe',
+    'email' => 'john@example.com'
+], $jwt);
+
+// PUT-Anfrage
+$updated = $apiClient->put('/users/123', [
+    'name' => 'Jane Doe'
+], $jwt);
+
+// DELETE-Anfrage
+$deleted = $apiClient->delete('/users/123', $jwt);</code></pre>
+        </div>
+        <p class="text-gray-700">Verwenden Sie die ApiClient-Klasse für alle HTTP-Anfragen an externe APIs mit integrierter JWT-Unterstützung.</p>
+    </div>
+
+    <!-- React API Calls -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">React API-Aufrufe</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Frontend API-Integration</h3>
+            <pre><code class="language-jsx">import React, { useState, useEffect } from 'react';
+
+export default function UserList() {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        const jwt = document.getElementById('user-list-root').dataset.jwt;
+        
+        fetch('/api/users', {
+            headers: {
+                'Authorization': `Bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            setUsers(data);
+            setLoading(false);
+        });
+    }, []);
+    
+    if (loading) return &lt;div&gt;Benutzer werden geladen...&lt;/div&gt;;
+    
+    return (
+        &lt;div&gt;
+            {users.map(user => (
+                &lt;div key={user.id} className="p-4 border rounded mb-2"&gt;
+                    &lt;h3&gt;{user.name}&lt;/h3&gt;
+                    &lt;p&gt;{user.email}&lt;/p&gt;
+                &lt;/div&gt;
+            ))}
+        &lt;/div&gt;
+    );
+}</code></pre>
+        </div>
+        <p class="text-gray-700">React-Komponenten können API-Aufrufe mit dem vom Server übergebenen JWT-Token durchführen.</p>
+    </div>
+
+    <!-- Error Handling -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Fehlerbehandlung</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">PHP-Fehlerbehandlung</h3>
+            <pre><code class="language-php">try {
+    $users = $apiClient->get('/users', ['page' => 1]);
+    // Erfolgreiche Antwort verarbeiten
+} catch (\Exception $e) {
+    // API-Fehler behandeln
+    error_log('API-Fehler: ' . $e->getMessage());
+    $users = []; // Fallback-Daten
+}</code></pre>
+        </div>
+        <p class="text-gray-700">Wickeln Sie API-Aufrufe immer in try-catch-Blöcke ein, um Fehler elegant zu behandeln.</p>
+    </div>
+
+    <!-- Caching -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">API-Antworten cachen</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Symfony Cache verwenden</h3>
+            <pre><code class="language-php">use Symfony\Component\Cache\Adapter\ApcuAdapter;
+
+$cache = new ApcuAdapter();
+$cacheKey = 'users_page_' . $page;
+
+// Zuerst aus dem Cache versuchen
+$users = $cache->get($cacheKey, function() use ($apiClient, $page) {
+    return $apiClient->get('/users', ['page' => $page]);
+});</code></pre>
+        </div>
+        <p class="text-gray-700">Cachen Sie API-Antworten, um die Leistung zu verbessern und API-Aufrufe zu reduzieren.</p>
+    </div>
+
+    <!-- Authentication -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">API-Authentifizierung</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">JWT-Authentifizierung</h3>
+            <pre><code class="language-php">// JWT wird automatisch in API-Anfragen eingefügt
+$apiClient = new ApiClient($_ENV['API_BASE_URL']);
+
+// JWT wird aus der Sitzung übergeben
+$response = $apiClient->get('/user/profile', $jwt);
+
+// Für React-Komponenten wird JWT über data-Attribute übergeben
+// &lt;div id="user-profile" data-jwt="{{ jwt }}"&gt;&lt;/div&gt;</code></pre>
+        </div>
+        <p class="text-gray-700">JWT-Token werden automatisch vom ApiClient für authentifizierte Anfragen behandelt.</p>
+    </div>
+
+    <!-- Best Practices -->
+    <div class="bg-green-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-green-800">API-Integrations-Best-Practices</h2>
+        <ul class="space-y-2 text-green-700">
+            <li>• <strong>Behandeln Sie immer Fehler</strong> und stellen Sie Fallback-Daten bereit</li>
+            <li>• <strong>Cachen Sie Antworten</strong> um die Leistung zu verbessern</li>
+            <li>• <strong>Verwenden Sie Umgebungsvariablen</strong> für API-Endpunkte</li>
+            <li>• <strong>Validieren Sie Antworten</strong> bevor Sie Daten verwenden</li>
+            <li>• <strong>Implementieren Sie Rate Limiting</strong> für externe APIs</li>
+            <li>• <strong>Protokollieren Sie API-Fehler</strong> für das Debugging</li>
+            <li>• <strong>Verwenden Sie HTTPS</strong> für alle API-Kommunikationen</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,151 @@
+{% extends "default.twig" %}
+
+{% block title %}API Integration - STCMS Guide{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">API Integration</h1>
+        <p class="text-xl text-gray-600">Complete guide to integrating APIs with STCMS</p>
+    </header>
+
+    <!-- Using ApiClient -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Using ApiClient</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">PHP Backend</h3>
+            <pre><code class="language-php">use Gemvc\Stcms\Core\ApiClient;
+
+$apiClient = new ApiClient($_ENV['API_BASE_URL']);
+
+// GET request
+$users = $apiClient->get('/users', ['page' => 1]);
+
+// POST request with JWT
+$response = $apiClient->post('/users', [
+    'name' => 'John Doe',
+    'email' => 'john@example.com'
+], $jwt);
+
+// PUT request
+$updated = $apiClient->put('/users/123', [
+    'name' => 'Jane Doe'
+], $jwt);
+
+// DELETE request
+$deleted = $apiClient->delete('/users/123', $jwt);</code></pre>
+        </div>
+        <p class="text-gray-700">Use the ApiClient class for all HTTP requests to external APIs with built-in JWT support.</p>
+    </div>
+
+    <!-- React API Calls -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">React API Calls</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Frontend API Integration</h3>
+            <pre><code class="language-jsx">import React, { useState, useEffect } from 'react';
+
+export default function UserList() {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        const jwt = document.getElementById('user-list-root').dataset.jwt;
+        
+        fetch('/api/users', {
+            headers: {
+                'Authorization': `Bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            setUsers(data);
+            setLoading(false);
+        });
+    }, []);
+    
+    if (loading) return &lt;div&gt;Loading users...&lt;/div&gt;;
+    
+    return (
+        &lt;div&gt;
+            {users.map(user => (
+                &lt;div key={user.id} className="p-4 border rounded mb-2"&gt;
+                    &lt;h3&gt;{user.name}&lt;/h3&gt;
+                    &lt;p&gt;{user.email}&lt;/p&gt;
+                &lt;/div&gt;
+            ))}
+        &lt;/div&gt;
+    );
+}</code></pre>
+        </div>
+        <p class="text-gray-700">React components can make API calls using the JWT token passed from the server.</p>
+    </div>
+
+    <!-- Error Handling -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Error Handling</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">PHP Error Handling</h3>
+            <pre><code class="language-php">try {
+    $users = $apiClient->get('/users', ['page' => 1]);
+    // Process successful response
+} catch (\Exception $e) {
+    // Handle API errors
+    error_log('API Error: ' . $e->getMessage());
+    $users = []; // Fallback data
+}</code></pre>
+        </div>
+        <p class="text-gray-700">Always wrap API calls in try-catch blocks to handle errors gracefully.</p>
+    </div>
+
+    <!-- Caching -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Caching API Responses</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Using Symfony Cache</h3>
+            <pre><code class="language-php">use Symfony\Component\Cache\Adapter\ApcuAdapter;
+
+$cache = new ApcuAdapter();
+$cacheKey = 'users_page_' . $page;
+
+// Try to get from cache first
+$users = $cache->get($cacheKey, function() use ($apiClient, $page) {
+    return $apiClient->get('/users', ['page' => $page]);
+});</code></pre>
+        </div>
+        <p class="text-gray-700">Cache API responses to improve performance and reduce API calls.</p>
+    </div>
+
+    <!-- Authentication -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">API Authentication</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">JWT Authentication</h3>
+            <pre><code class="language-php">// JWT is automatically included in API requests
+$apiClient = new ApiClient($_ENV['API_BASE_URL']);
+
+// The JWT is passed from the session
+$response = $apiClient->get('/user/profile', $jwt);
+
+// For React components, JWT is passed via data attributes
+// &lt;div id="user-profile" data-jwt="{{ jwt }}"&gt;&lt;/div&gt;</code></pre>
+        </div>
+        <p class="text-gray-700">JWT tokens are automatically handled by the ApiClient for authenticated requests.</p>
+    </div>
+
+    <!-- Best Practices -->
+    <div class="bg-green-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-green-800">API Integration Best Practices</h2>
+        <ul class="space-y-2 text-green-700">
+            <li>• <strong>Always handle errors</strong> and provide fallback data</li>
+            <li>• <strong>Cache responses</strong> to improve performance</li>
+            <li>• <strong>Use environment variables</strong> for API endpoints</li>
+            <li>• <strong>Validate responses</strong> before using data</li>
+            <li>• <strong>Implement rate limiting</strong> for external APIs</li>
+            <li>• <strong>Log API errors</strong> for debugging</li>
+            <li>• <strong>Use HTTPS</strong> for all API communications</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

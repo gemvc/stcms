@@ -1,0 +1,146 @@
+{% extends "default.twig" %}
+
+{% block title %}React Components - STCMS Guide{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">React Components</h1>
+        <p class="text-xl text-gray-600">Complete guide to creating and using React components in STCMS</p>
+    </header>
+
+    <!-- Creating Components -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Creating a React Component</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">File: assets/js/components/UserProfile.jsx</h3>
+            <pre><code class="language-jsx">import React, { useState, useEffect } from 'react';
+
+export default function UserProfile() {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        // Get user data from data attributes
+        const userData = JSON.parse(
+            document.getElementById('user-profile-root').dataset.user
+        );
+        setUser(userData);
+        setLoading(false);
+    }, []);
+    
+    if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
+    
+    return (
+        &lt;div className="p-4 bg-green-50 rounded"&gt;
+            &lt;h3 className="text-lg font-semibold mb-2"&gt;Welcome, {user.name}!&lt;/h3&gt;
+            &lt;p&gt;Email: {user.email}&lt;/p&gt;
+            &lt;p&gt;Role: {user.role}&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+        </div>
+        <p class="text-gray-700">Create React components in the <code>assets/js/components/</code> directory and export them as default.</p>
+    </div>
+
+    <!-- Registering Components -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Registering Components</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">File: assets/js/registry.js</h3>
+            <pre><code class="language-javascript">import UserProfile from './components/UserProfile';
+import ContactForm from './components/ContactForm';
+
+export const registry = {
+    'user-profile-root': {
+        component: UserProfile,
+        getProps: (el) => ({
+            user: JSON.parse(el.dataset.user),
+            jwt: el.dataset.jwt
+        })
+    },
+    'contact-form-root': {
+        component: ContactForm,
+        getProps: (el) => ({
+            apiEndpoint: el.dataset.apiEndpoint,
+            csrfToken: el.dataset.csrfToken
+        })
+    }
+};</code></pre>
+        </div>
+        <p class="text-gray-700">Register your components in the registry with their mount point ID and prop parsing function.</p>
+    </div>
+
+    <!-- Using Components in Twig -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Using Components in Twig</h2>
+        <div class="bg-gray-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">Twig Template</h3>
+            <pre><code class="language-twig">&lt;div id="user-profile-root" 
+     data-user='{{ user|json_encode }}' 
+     data-jwt="{{ jwt }}"&gt;
+    &lt;!-- React component will render here --&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+        <p class="text-gray-700">Add mount points with unique IDs and pass data via data attributes.</p>
+    </div>
+
+    <!-- Component Best Practices -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Component Best Practices</h2>
+        <ul class="space-y-2 text-gray-700">
+            <li>• <strong>Use unique IDs</strong> for each component mount point</li>
+            <li>• <strong>Pass data via data attributes</strong> from Twig to React</li>
+            <li>• <strong>Handle loading states</strong> in your components</li>
+            <li>• <strong>Use TypeScript</strong> for better type safety (optional)</li>
+            <li>• <strong>Keep components focused</strong> on single responsibilities</li>
+            <li>• <strong>Test components</strong> independently</li>
+        </ul>
+    </div>
+
+    <!-- Data Flow -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Data Flow</h2>
+        <div class="bg-blue-50 p-4 rounded mb-4">
+            <h3 class="font-semibold mb-2">How Data Flows</h3>
+            <ol class="space-y-2 text-blue-800">
+                <li>1. <strong>PHP Backend</strong> - Processes data and authentication</li>
+                <li>2. <strong>Twig Template</strong> - Renders HTML with data attributes</li>
+                <li>3. <strong>React Component</strong> - Reads data from DOM attributes</li>
+                <li>4. <strong>User Interaction</strong> - Component updates based on user actions</li>
+            </ol>
+        </div>
+        <p class="text-gray-700">Data flows from PHP → Twig → React, ensuring server-side security with client-side interactivity.</p>
+    </div>
+
+    <!-- Building and Development -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Building and Development</h2>
+        <div class="space-y-4">
+            <div>
+                <h3 class="font-semibold mb-2">Development Mode</h3>
+                <pre><code class="language-bash">npm run dev</code></pre>
+                <p class="text-gray-700">Start Vite dev server for hot reloading during development.</p>
+            </div>
+            <div>
+                <h3 class="font-semibold mb-2">Production Build</h3>
+                <pre><code class="language-bash">npm run build</code></pre>
+                <p class="text-gray-700">Build optimized assets for production deployment.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Common Patterns -->
+    <div class="bg-green-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-green-800">Common Component Patterns</h2>
+        <ul class="space-y-2 text-green-700">
+            <li>• <strong>Form Components</strong> - Contact forms, user registration</li>
+            <li>• <strong>Data Display</strong> - User profiles, product listings</li>
+            <li>• <strong>Interactive Widgets</strong> - Search, filters, pagination</li>
+            <li>• <strong>Real-time Updates</strong> - Chat, notifications, live data</li>
+            <li>• <strong>Modal Dialogs</strong> - Confirmations, detailed views</li>
+            <li>• <strong>Navigation</strong> - Dynamic menus, breadcrumbs</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

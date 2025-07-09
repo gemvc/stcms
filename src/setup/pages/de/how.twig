@@ -1,489 +1,109 @@
 {% extends "default.twig" %}
 
-{% block title %}STCMS Anleitung - Vollständige Anleitung{% endblock %}
+{% block title %}Wie man STCMS verwendet - Vollständige Anleitung{% endblock %}
 
 {% block content %}
+<div class="container mx-auto px-4 py-8">
     <header class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">STCMS Anleitung</h1>
-        <p class="text-xl text-gray-600">Vollständige Anleitung zum Entwickeln mit STCMS - Hybrid PHP/React CMS</p>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Wie man STCMS verwendet</h1>
+        <p class="text-xl text-gray-600">Vollständige Anleitung zum Erstellen mit STCMS - Hybrid PHP/React CMS</p>
     </header>
 
-    <!-- Table of Contents -->
+    <!-- Quick Start -->
     <div class="bg-blue-50 p-6 rounded-lg mb-8">
-        <h2 class="text-2xl font-semibold mb-4">Inhaltsverzeichnis</h2>
-        <ul class="space-y-2 text-blue-800">
-            <li><a href="#installation" class="hover:underline">1. Installation & Setup</a></li>
-            <li><a href="#project-structure" class="hover:underline">2. Projektstruktur</a></li>
-            <li><a href="#creating-pages" class="hover:underline">3. Seiten erstellen</a></li>
-            <li><a href="#creating-templates" class="hover:underline">4. Templates erstellen</a></li>
-            <li><a href="#react-components" class="hover:underline">5. React-Komponenten</a></li>
-            <li><a href="#multi-language" class="hover:underline">6. Mehrsprachige Unterstützung</a></li>
-            <li><a href="#api-integration" class="hover:underline">7. API-Integration</a></li>
-            <li><a href="#authentication" class="hover:underline">8. Authentifizierung & Sicherheit</a></li>
-            <li><a href="#deployment" class="hover:underline">9. Deployment</a></li>
+        <h2 class="text-2xl font-semibold mb-4">Schnellstart</h2>
+        <ol class="space-y-2 text-blue-800">
+            <li>1. STCMS installieren: <code>composer require gemvc/stcms</code></li>
+            <li>2. Projekt initialisieren: <code>php vendor/gemvc/stcms/bin/stcms init</code></li>
+            <li>3. Abhängigkeiten installieren: <code>npm install</code></li>
+            <li>4. Assets erstellen: <code>npm run build</code></li>
+            <li>5. Server starten: <code>php -S localhost:8000</code></li>
+        </ol>
+    </div>
+
+    <!-- Complete Guides -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">📦 Installation & Einrichtung</h2>
+            <p class="text-gray-700 mb-4">Vollständige Anleitung zur Installation und Konfiguration von STCMS</p>
+            <a href="/de/how-installation" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Anleitung anzeigen →
+            </a>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">🔐 Authentifizierung & Sicherheit</h2>
+            <p class="text-gray-700 mb-4">Lernen Sie das JWT-Sicherheitsmodell und die Authentifizierung kennen</p>
+            <a href="/de/how-authentication" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Anleitung anzeigen →
+            </a>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">⚛️ React Komponenten</h2>
+            <p class="text-gray-700 mb-4">Erstellen und verwenden Sie React-Komponenten in STCMS</p>
+            <a href="/de/how-react" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Anleitung anzeigen →
+            </a>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">🌍 Mehrsprachige Unterstützung</h2>
+            <p class="text-gray-700 mb-4">Implementieren Sie mehrsprachige Unterstützung mit RTL</p>
+            <a href="/de/how-multilanguage" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Anleitung anzeigen →
+            </a>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">🔌 API Integration</h2>
+            <p class="text-gray-700 mb-4">Integrieren Sie externe APIs mit Caching</p>
+            <a href="/de/how-api" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Anleitung anzeigen →
+            </a>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">🚀 Deployment</h2>
+            <p class="text-gray-700 mb-4">Stellen Sie Ihre STCMS-Anwendung in der Produktion bereit</p>
+            <a href="/de/how-deployment" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Anleitung anzeigen →
+            </a>
+        </div>
+    </div>
+
+    <!-- What You Get -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Was Sie mit STCMS erhalten</h2>
+        <ul class="space-y-2 text-gray-700">
+            <li>• <strong>Symfony Cache</strong> - Modernes Caching (APCu/Datei)</li>
+            <li>• <strong>Symfony Dotenv</strong> - Umgebungsverwaltung</li>
+            <li>• <strong>Guzzle HTTP</strong> - API-Integration</li>
+            <li>• <strong>Twig Templates</strong> - Server-seitiges Rendering</li>
+            <li>• <strong>Vite Build System</strong> - React-Bundling</li>
+            <li>• <strong>Sicherheits-Header</strong> - Apache-Konfiguration</li>
+            <li>• <strong>Mehrsprachige Unterstützung</strong> - Integrierte Sprach-Routing</li>
+            <li>• <strong>JWT Authentifizierung</strong> - Sichere API-Kommunikation</li>
         </ul>
     </div>
 
-    <!-- 1. Installation & Setup -->
-    <section id="installation" class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">1. Installation & Setup</h2>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">Schnellstart</h3>
-            <div class="space-y-4">
-                <div>
-                    <h4 class="font-semibold mb-2">Schritt 1: STCMS installieren</h4>
-                    <pre><code class="language-bash">composer require gemvc/stcms</code></pre>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-2">Schritt 2: Projekt initialisieren</h4>
-                    <pre><code class="language-bash">php vendor/gemvc/stcms/bin/stcms init</code></pre>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-2">Schritt 3: Frontend-Abhängigkeiten installieren</h4>
-                    <pre><code class="language-bash">npm install</code></pre>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-2">Schritt 4: Assets erstellen</h4>
-                    <pre><code class="language-bash">npm run build</code></pre>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-2">Schritt 5: Entwicklungsserver starten</h4>
-                    <pre><code class="language-bash">php -S localhost:8000</code></pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold mb-4">Was Sie bekommen</h3>
-            <ul class="space-y-2 text-gray-700">
-                <li>• <strong>Symfony Cache</strong> - Modernes Caching (APCu/Datei)</li>
-                <li>• <strong>Symfony Dotenv</strong> - Umgebungsverwaltung</li>
-                <li>• <strong>Guzzle HTTP</strong> - API-Integration</li>
-                <li>• <strong>Twig Templates</strong> - Server-seitiges Rendering</li>
-                <li>• <strong>Vite Build System</strong> - React-Bundling</li>
-                <li>• <strong>Security Headers</strong> - Apache-Konfiguration</li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- 2. Project Structure -->
-    <section id="project-structure" class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">2. Projektstruktur</h2>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold mb-4">Verzeichnisstruktur</h3>
-            <pre><code class="language-plaintext">project-root/
-├── assets/
-│   ├── js/
-│   │   ├── app.jsx                # Haupt-React-Einstiegspunkt
-│   │   ├── registry.js            # Komponenten-Registry
-│   │   └── components/            # React-Komponenten
-│   └── css/                       # Styles
-├── pages/
-│   ├── index.twig                 # Startseite
-│   └── react.twig                 # React-Beispiele
-├── templates/
-│   └── default.twig               # Basis-Layout
-├── public/
-│   └── assets/build/app.js        # Erstelltes JS-Bundle
-├── vite.config.js                 # Vite-Konfiguration
-├── package.json                   # NPM-Abhängigkeiten
-├── composer.json                  # PHP-Abhängigkeiten
-├── index.php                      # PHP-Einstiegspunkt
-├── .env                           # Umgebungskonfiguration
-├── .htaccess                      # Apache-Konfiguration
-└── vendor/                        # Composer-Abhängigkeiten</code></pre>
-        </div>
-    </section>
-
-    <!-- 3. Creating Pages -->
-    <section id="creating-pages" class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">3. Seiten erstellen</h2>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">Einfaches Seitenbeispiel</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">Datei: pages/about.twig</h4>
-                <pre><code class="language-twig">{% extends "default.twig" %}
-
-{% block title %}Über uns{% endblock %}
-
-{% block content %}
-<div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6">Über unser Unternehmen</h1>
-    
-    <div class="prose lg:prose-xl">
-        <p>Dies ist der Inhalt unserer Über-uns-Seite...</p>
-    </div>
-    
-    <!-- React-Komponenten-Mount-Punkt -->
-    <div id="team-members-root"></div>
-</div>
-{% endblock %}</code></pre>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold mb-4">Seiten-Best-Practices</h3>
-            <ul class="space-y-2 text-gray-700">
-                <li>• Erweitern Sie immer <code>default.twig</code> für konsistentes Layout</li>
-                <li>• Verwenden Sie semantisches HTML und Tailwind-Klassen für Styling</li>
-                <li>• Fügen Sie React-Mount-Punkte mit eindeutigen IDs hinzu</li>
-                <li>• Halten Sie Seiten auf Inhalt fokussiert, nicht auf Logik</li>
-                <li>• Verwenden Sie beschreibende Dateinamen (z.B. <code>contact.twig</code>)</li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- 4. Creating Templates -->
-    <section id="creating-templates" class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">4. Templates erstellen</h2>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">Benutzerdefiniertes Layout-Template</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">Datei: templates/admin.twig</h4>
-                <pre><code class="language-twig">&lt;!DOCTYPE html&gt;
-&lt;html lang="{{ lang|default('en') }}"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;{% block title %}Admin-Panel{% endblock %}&lt;/title&gt;
-    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body class="bg-gray-100"&gt;
-    &lt;!-- Admin-Sidebar --&gt;
-    &lt;div class="flex"&gt;
-        &lt;aside class="w-64 bg-gray-800 min-h-screen"&gt;
-            &lt;nav class="p-4"&gt;
-                &lt;ul class="space-y-2"&gt;
-                    &lt;li&gt;&lt;a href="/admin/dashboard" class="text-white hover:text-gray-300"&gt;Dashboard&lt;/a&gt;&lt;/li&gt;
-                    &lt;li&gt;&lt;a href="/admin/users" class="text-white hover:text-gray-300"&gt;Benutzer&lt;/a&gt;&lt;/li&gt;
-                    &lt;li&gt;&lt;a href="/admin/content" class="text-white hover:text-gray-300"&gt;Inhalt&lt;/a&gt;&lt;/li&gt;
-                &lt;/ul&gt;
-            &lt;/nav&gt;
-        &lt;/aside&gt;
-        
-        &lt;!-- Hauptinhalt --&gt;
-        &lt;main class="flex-1 p-8"&gt;
-            {% block content %}{% endblock %}
-        &lt;/main&gt;
-    &lt;/div&gt;
-    
-    &lt;script src="/assets/build/app.js"&gt;&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold mb-4">Template-Funktionen</h3>
-            <ul class="space-y-2 text-gray-700">
-                <li>• <strong>Blöcke:</strong> Verwenden Sie <code>{% block name %}{% endblock %}</code> für Erweiterbarkeit</li>
-                <li>• <strong>Variablen:</strong> Greifen Sie auf <code>{{ variable }}</code> von PHP zu</li>
-                <li>• <strong>Funktionen:</strong> Verwenden Sie <code>{{ asset('path') }}</code>, <code>{{ route('name') }}</code></li>
-                <li>• <strong>Bedingungen:</strong> <code>{% if condition %}...{% endif %}</code></li>
-                <li>• <strong>Schleifen:</strong> <code>{% for item in items %}...{% endfor %}</code></li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- 5. React Components -->
-    <section id="react-components" class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">5. React-Komponenten</h2>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">React-Komponente erstellen</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">Datei: assets/js/components/UserProfile.jsx</h4>
-                <pre><code class="language-jsx">import React, { useState, useEffect } from 'react';
-
-export default function UserProfile() {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    
-    useEffect(() => {
-        // Benutzerdaten aus data-Attributen abrufen
-        const userData = JSON.parse(
-            document.getElementById('user-profile-root').dataset.user
-        );
-        setUser(userData);
-        setLoading(false);
-    }, []);
-    
-    if (loading) return &lt;div&gt;Laden...&lt;/div&gt;;
-    
-    return (
-        &lt;div className="p-4 bg-green-50 rounded"&gt;
-            &lt;h3 className="text-lg font-semibold mb-2"&gt;Willkommen, {user.name}!&lt;/h3&gt;
-            &lt;p&gt;E-Mail: {user.email}&lt;/p&gt;
-            &lt;p&gt;Rolle: {user.role}&lt;/p&gt;
-        &lt;/div&gt;
-    );
-}</code></pre>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">Komponenten registrieren</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">Datei: assets/js/registry.js</h4>
-                <pre><code class="language-javascript">import UserProfile from './components/UserProfile';
-import ContactForm from './components/ContactForm';
-
-export const registry = {
-    'user-profile-root': {
-        component: UserProfile,
-        getProps: (el) => ({
-            user: JSON.parse(el.dataset.user),
-            jwt: el.dataset.jwt
-        })
-    },
-    'contact-form-root': {
-        component: ContactForm,
-        getProps: (el) => ({
-            apiEndpoint: el.dataset.apiEndpoint,
-            csrfToken: el.dataset.csrfToken
-        })
-    }
-};</code></pre>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold mb-4">Komponenten in Twig verwenden</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">Twig-Template</h4>
-                <pre><code class="language-twig">&lt;div id="user-profile-root" 
-     data-user='{{ user|json_encode }}' 
-     data-jwt="{{ jwt }}"&gt;
-    &lt;!-- React-Komponente wird hier gerendert --&gt;
-&lt;/div&gt;</code></pre>
-            </div>
-        </div>
-    </section>
-
-    <!-- 6. Multi-Language Support -->
-    <section id="multi-language" class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">6. Mehrsprachige Unterstützung</h2>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">Spracherkennung</h3>
-            <p class="text-gray-700 mb-4">STCMS erkennt automatisch die Sprache aus URL-Mustern:</p>
-            <ul class="space-y-2 text-gray-700">
-                <li>• <code>/en/</code> - Englisch</li>
-                <li>• <code>/de/</code> - Deutsch</li>
-                <li>• <code>/fa/</code> - Persisch (RTL)</li>
-            </ul>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">Template-Implementierung</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">Sprachspezifischer Inhalt</h4>
-                <pre><code class="language-twig">{% if lang == 'de' %}
-    &lt;h1&gt;Willkommen bei STCMS&lt;/h1&gt;
-    &lt;p&gt;Hybrides PHP/React Content Management System&lt;/p&gt;
-{% elseif lang == 'fa' %}
-    &lt;h1&gt;به STCMS خوش آمدید&lt;/h1&gt;
-    &lt;p&gt;سیستم مدیریت محتوای هیبریدی PHP/React&lt;/p&gt;
-{% else %}
-    &lt;h1&gt;Welcome to STCMS&lt;/h1&gt;
-    &lt;p&gt;Hybrid PHP/React Content Management System&lt;/p&gt;
-{% endif %}</code></pre>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold mb-4">Sprachwechsel</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">JavaScript-Implementierung</h4>
-                <pre><code class="language-javascript">function switchLanguage(newLang) {
-    const currentPath = window.location.pathname;
-    const pathWithoutLang = currentPath.replace(/^\/(en|de|fa)\//, '/');
-    const newUrl = '/' + newLang + pathWithoutLang;
-    window.location.href = newUrl;
-}</code></pre>
-            </div>
-        </div>
-    </section>
-
-    <!-- 7. API Integration -->
-    <section id="api-integration" class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">7. API-Integration</h2>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">ApiClient verwenden</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">PHP Backend</h4>
-                <pre><code class="language-php">use Gemvc\Stcms\Core\ApiClient;
-
-$apiClient = new ApiClient($_ENV['API_BASE_URL']);
-
-// GET-Anfrage
-$users = $apiClient->get('/users', ['page' => 1]);
-
-// POST-Anfrage mit JWT
-$response = $apiClient->post('/users', [
-    'name' => 'John Doe',
-    'email' => 'john@example.com'
-], $jwt);
-
-// PUT-Anfrage
-$updated = $apiClient->put('/users/123', [
-    'name' => 'Jane Doe'
-], $jwt);
-
-// DELETE-Anfrage
-$deleted = $apiClient->delete('/users/123', $jwt);</code></pre>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold mb-4">React API-Aufrufe</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">Frontend API-Integration</h4>
-                <pre><code class="language-jsx">import React, { useState, useEffect } from 'react';
-
-export default function UserList() {
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
-    
-    useEffect(() => {
-        const jwt = document.getElementById('user-list-root').dataset.jwt;
-        
-        fetch('/api/users', {
-            headers: {
-                'Authorization': `Bearer ${jwt}`,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            setUsers(data);
-            setLoading(false);
-        });
-    }, []);
-    
-    if (loading) return &lt;div&gt;Benutzer werden geladen...&lt;/div&gt;;
-    
-    return (
-        &lt;div&gt;
-            {users.map(user => (
-                &lt;div key={user.id} className="p-4 border rounded mb-2"&gt;
-                    &lt;h3&gt;{user.name}&lt;/h3&gt;
-                    &lt;p&gt;{user.email}&lt;/p&gt;
-                &lt;/div&gt;
-            ))}
-        &lt;/div&gt;
-    );
-}</code></pre>
-            </div>
-        </div>
-    </section>
-
-    <!-- 8. Authentication & Security -->
-    <section id="authentication" class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">8. Authentifizierung & Sicherheit</h2>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">JWT-Sicherheitsmodell</h3>
-            <ul class="space-y-2 text-gray-700">
-                <li>• <strong>JWT wird nur an React weitergegeben, wenn authentifiziert</strong></li>
-                <li>• <strong>Alle sensiblen Logiken werden serverseitig behandelt</strong></li>
-                <li>• <strong>React verwendet JWT für API-Anfragen</strong></li>
-                <li>• <strong>Session-Management wird vom PHP-Backend behandelt</strong></li>
-            </ul>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">Sicherheits-Header (.htaccess)</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <pre><code class="language-apache"># Sicherheits-Header
-&lt;IfModule mod_headers.c&gt;
-    Header always set X-Content-Type-Options nosniff
-    Header always set X-Frame-Options DENY
-    Header always set X-XSS-Protection "1; mode=block"
-&lt;/IfModule&gt;
-
-# Dateischutz
-&lt;Files ".env"&gt;
-    Order allow,deny
-    Deny from all
-&lt;/Files&gt;</code></pre>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold mb-4">Authentifizierungsprüfung</h3>
-            <div class="bg-gray-50 p-4 rounded mb-4">
-                <h4 class="font-semibold mb-2">Twig-Template</h4>
-                <pre><code class="language-twig">{% if is_authenticated() %}
-    &lt;div id="user-profile-root" data-user="{{ user|json_encode }}" data-jwt="{{ jwt }}"&gt;&lt;/div&gt;
-{% else %}
-    &lt;div class="bg-blue-50 p-4 rounded"&gt;
-        &lt;p&gt;Bitte melden Sie sich an, um Ihr Profil zu sehen.&lt;/p&gt;
-    &lt;/div&gt;
-{% endif %}</code></pre>
-            </div>
-        </div>
-    </section>
-
-    <!-- 9. Deployment -->
-    <section id="deployment" class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">9. Deployment</h2>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 class="text-xl font-semibold mb-4">Produktions-Build</h3>
-            <div class="space-y-4">
-                <div>
-                    <h4 class="font-semibold mb-2">Frontend-Assets erstellen</h4>
-                    <pre><code class="language-bash">npm run build</code></pre>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-2">Produktions-Abhängigkeiten installieren</h4>
-                    <pre><code class="language-bash">composer install --no-dev --optimize-autoloader</code></pre>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-2">Umgebungsvariablen setzen</h4>
-                    <pre><code class="language-bash">cp .env.example .env
-# .env mit Produktionswerten bearbeiten</code></pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold mb-4">Server-Anforderungen</h3>
-            <ul class="space-y-2 text-gray-700">
-                <li>• <strong>PHP 8.0+</strong> mit erforderlichen Erweiterungen</li>
-                <li>• <strong>Apache</strong> mit aktiviertem mod_rewrite</li>
-                <li>• <strong>Composer</strong> für PHP-Abhängigkeiten</li>
-                <li>• <strong>Node.js</strong> für Frontend-Builds</li>
-                <li>• <strong>APCu</strong> (optional, für bessere Leistung)</li>
-            </ul>
-        </div>
-    </section>
-
     <!-- Quick Reference -->
-    <section class="mb-12">
-        <h2 class="text-3xl font-semibold mb-6">Schnellreferenz</h2>
-        
+    <div class="bg-green-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-green-800">Schnellreferenz</h2>
         <div class="grid md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="text-xl font-semibold mb-4">Häufige Befehle</h3>
-                <ul class="space-y-2 text-gray-700">
+            <div>
+                <h3 class="font-semibold mb-2">Häufige Befehle</h3>
+                <ul class="space-y-1 text-green-700">
                     <li><code>composer require gemvc/stcms</code> - STCMS installieren</li>
                     <li><code>php vendor/gemvc/stcms/bin/stcms init</code> - Projekt initialisieren</li>
                     <li><code>npm install</code> - Frontend-Abhängigkeiten installieren</li>
                     <li><code>npm run build</code> - Produktions-Assets erstellen</li>
-                    <li><code>php -S localhost:8000</code> - Entwicklungsserver starten</li>
+                    <li><code>php -S localhost:8000</code> - Dev-Server starten</li>
                 </ul>
             </div>
-            
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="text-xl font-semibold mb-4">Dateipfade</h3>
-                <ul class="space-y-2 text-gray-700">
+            <div>
+                <h3 class="font-semibold mb-2">Datei-Standorte</h3>
+                <ul class="space-y-1 text-green-700">
                     <li><code>pages/*.twig</code> - Twig-Seiten</li>
                     <li><code>templates/*.twig</code> - Layout-Templates</li>
                     <li><code>assets/js/components/*.jsx</code> - React-Komponenten</li>
@@ -492,18 +112,6 @@ export default function UserList() {
                 </ul>
             </div>
         </div>
-    </section>
-
-    <!-- Next Steps -->
-    <div class="bg-green-50 p-6 rounded-lg">
-        <h2 class="text-2xl font-semibold mb-4 text-green-800">Nächste Schritte</h2>
-        <p class="text-green-700 mb-4">Nachdem Sie die Grundlagen verstanden haben, erkunden Sie diese erweiterten Themen:</p>
-        <ul class="space-y-2 text-green-700">
-            <li>• <a href="/react" class="underline hover:no-underline">React-Komponenten-Beispiele</a></li>
-            <li>• <a href="/docs" class="underline hover:no-underline">Erweiterte Dokumentation</a></li>
-            <li>• <a href="/examples" class="underline hover:no-underline">Code-Beispiele</a></li>
-            <li>• <a href="https://github.com/gemvc/stcms" class="underline hover:no-underline">GitHub-Repository</a></li>
-        </ul>
     </div>
 </div>
 {% endblock %}

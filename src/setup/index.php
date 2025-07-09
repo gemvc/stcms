@@ -23,7 +23,8 @@ $templateEngine = new TemplateEngine([
     __DIR__ . '/pages',
     __DIR__ . '/templates',
 ]);
-$router = new MultilingualRouter(['en','de']);
+$supportedLanguages = ['en','de'];
+$router = new MultilingualRouter($supportedLanguages);
 
 // Create and run the application
 $app = new Application($router, $templateEngine, $apiClient);

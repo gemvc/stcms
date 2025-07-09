@@ -8,9 +8,13 @@ use Gemvc\Stcms\Core\Response;
 class MultilingualRouter extends Router
 {
     private array $languages;
+    private string $defaultLanguage;
+    
     public function __construct(array $languages)
     {
         $this->languages = $languages;
+        // Read default language from environment, fallback to 'en'
+        $this->defaultLanguage = $_ENV['DEFAULT_LANGUAGE'] ?? 'en';
     }
 
     public function handle(Request $request, Application $app): Response
@@ -42,12 +46,12 @@ class MultilingualRouter extends Router
         
         // Extract language and subpath
         $pathParts = explode('/', trim($path, '/'));
-        $language = $pathParts[0] ?? 'en';
+        $language = $pathParts[0] ?? $this->defaultLanguage;
         $subpath = implode('/', array_slice($pathParts, 1));
         
-        // Validate language
+        // Validate language - use default language if invalid
         if (!in_array($language, $this->languages)) {
-            $language = 'en';
+            $language = $this->defaultLanguage;
             $subpath = trim($path, '/');
         }
         

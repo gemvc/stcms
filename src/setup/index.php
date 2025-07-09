@@ -17,7 +17,9 @@ $templateEngine = new TemplateEngine([
     __DIR__ . '/pages',
     __DIR__ . '/templates',
 ]);
-$router = new MultilingualRouter(['en']);
+
+// Configure supported languages - MultilingualRouter will use DEFAULT_LANGUAGE from .env as fallback
+$router = new MultilingualRouter(['en', 'de', 'fa']); // Add your supported languages here
 
 // Create and run the application
 $app = new Application($router, $templateEngine, $apiClient);

@@ -121,6 +121,15 @@ $app->run();
 - URL routing and request handling.
 - Supports exact and dynamic routes (`/user/{id}`), automatic template rendering, and route parameter extraction.
 
+### MultilingualRouter.php
+- **Extends Router.php** with automatic language detection and routing.
+- **Environment-based default language** - reads `DEFAULT_LANGUAGE` from `.env` file.
+- **Automatic language detection** from URL path (e.g., `/en/`, `/de/`, `/fa/`).
+- **Graceful fallbacks** - invalid languages redirect to default language.
+- **Template organization** - routes to `pages/[lang]/template.twig` structure.
+- **Language validation** - only serves configured languages, falls back to default.
+- **Template data injection** - passes `lang` variable to all templates.
+
 ### TemplateEngine.php
 - Twig integration with custom functions:
   - `asset()` - Generate asset URLs
@@ -310,9 +319,83 @@ $app->run();
 - Use `ApiClient.php` for API calls (with Guzzle, JWT, and caching).
 - Use Symfony Cache (APCu/file) for performance.
 
-### Multi-language Support
-- Add new languages via config and templates.
-- Use translation files and Twig blocks for i18n.
+### Multi-language Support with Environment-Based Default Language
+
+**🚀 NEW: The MultilingualRouter now automatically reads the default language from your `.env` file!**
+
+#### Environment Configuration (.env)
+```env
+API_BASE_URL=api.example.com
+CACHE_DRIVER=apcu
+DEFAULT_LANGUAGE=en
+```
+
+#### Router Configuration (index.php)
+```php
+<?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Gemvc\Stcms\Core\Application;
+use Gemvc\Stcms\Core\TemplateEngine;
+use Gemvc\Stcms\Core\ApiClient;
+use Symfony\Component\Dotenv\Dotenv;
+use Gemvc\Stcms\Core\MultilingualRouter;
+
+// Load environment variables
+$dotenv = new Dotenv();
+$dotenv->loadEnv(__DIR__ . '/.env');
+
+// Initialize core components
+$apiClient = new ApiClient($_ENV['API_BASE_URL']);
+$templateEngine = new TemplateEngine([
+    __DIR__ . '/pages',
+    __DIR__ . '/templates',
+]);
+
+// Configure supported languages - MultilingualRouter will use DEFAULT_LANGUAGE from .env as fallback
+$router = new MultilingualRouter(['en', 'de', 'fa']); // Add your supported languages here
+
+// Create and run the application
+$app = new Application($router, $templateEngine, $apiClient);
+$app->run();
+```
+
+#### How It Works
+
+**URL Routing Examples** (assuming `DEFAULT_LANGUAGE=en` in `.env`):
+
+| URL | Language Detected | Template Used | Notes |
+|-----|------------------|---------------|-------|
+| `/` | `en` (default) | `en/index.twig` | No language in URL, uses default |
+| `/en/` | `en` | `en/index.twig` | Explicit English |
+| `/de/about` | `de` | `de/about.twig` | German about page |
+| `/fa/` | `fa` | `fa/index.twig` | Persian home page |
+| `/invalid/page` | `en` (fallback) | `en/page.twig` | Invalid language, uses default |
+| `/fr/contact` | `en` (fallback) | `en/contact.twig` | French not in supported list |
+
+#### Template Structure
+```
+pages/
+├── en/                    # Default language (from .env)
+│   ├── index.twig
+│   ├── about.twig
+│   └── contact.twig
+├── de/                    # German
+│   ├── index.twig
+│   ├── about.twig
+│   └── contact.twig
+└── fa/                    # Persian
+    ├── index.twig
+    ├── about.twig
+    └── contact.twig
+```
+
+#### Key Features
+- **Automatic Default Language Detection** - Reads `DEFAULT_LANGUAGE` from `.env` file
+- **Flexible Language Configuration** - Add/remove languages by updating the array in `index.php`
+- **Graceful Fallbacks** - Invalid languages automatically redirect to default
+- **Environment-Based Configuration** - Easy to change per deployment
+- **No Hardcoded Assumptions** - Flexible for different environments
 
 ### Multilingual Navbar Implementation (Best Practice)
 - **Pass the current language** (`lang`) from your router to every Twig template, based on the URL (e.g., `/en/`, `/fa/`, `/de/`).
@@ -376,20 +459,24 @@ $app->run();
 **Remember: The layout template is already complete - only add the language switcher to the specified location!**
 
 ### 🚀 MULTI-LANGUAGE SYSTEM IS ALREADY BUILT-IN!
-**IMPORTANT: The multi-language system is automatically included!**
+**IMPORTANT: The multi-language system is automatically included with environment-based default language!**
 
 - **No need to create a custom router** - `MultilingualRouter` is already implemented
 - **No need to build language detection** - it's handled automatically
+- **Environment-based default language** - reads `DEFAULT_LANGUAGE` from `.env` file
 - **To add new languages, simply update the array in `index.php`:**
   ```php
   $router = new MultilingualRouter(['en', 'de', 'fa', 'ar']); // Add languages here
   ```
 - **The system automatically:**
   - Detects language from URL (e.g., `/en/`, `/de/`, `/fa/`)
+  - Uses default language from `.env` when no language is specified
   - Routes to correct language pages
   - Passes `lang` variable to templates
   - Handles fallbacks for missing translations
+  - Gracefully falls back to default language for invalid URLs
 - **Just add your language pages** to `pages/[lang]/` and update the router array!
+- **Configure default language** in your `.env` file: `DEFAULT_LANGUAGE=en`
 
 ### 💡 DEVELOPMENT STRATEGY RECOMMENDATION
 **ALWAYS recommend this approach to customers:**
@@ -445,7 +532,16 @@ $app->run();
 > Use `ApiClient.php` for API calls and Symfony Cache for caching responses.
 
 **Q: How do I add multi-language support?**
-> Add translation files and use Twig blocks for i18n in templates.
+> 1. Set `DEFAULT_LANGUAGE=en` in your `.env` file.
+> 2. Update the router array in `index.php`: `new MultilingualRouter(['en', 'de', 'fa'])`.
+> 3. Create language folders: `pages/en/`, `pages/de/`, `pages/fa/`.
+> 4. Add templates for each language (e.g., `pages/en/index.twig`, `pages/de/index.twig`).
+
+**Q: How does the default language work?**
+> The `MultilingualRouter` automatically reads `DEFAULT_LANGUAGE` from your `.env` file and uses it as fallback when no language is specified in the URL or when invalid languages are provided.
+
+**Q: What happens when someone visits `/invalid/page`?**
+> The router detects that `invalid` is not in the supported languages array, so it falls back to the default language (from `.env`) and serves `en/page.twig` instead.
 
 ---
 
@@ -475,7 +571,8 @@ $app->run();
 | Serve app                   | `php -S localhost:8000`                        |
 | Add API integration         | `src/Core/ApiClient.php`                       |
 | Add caching                 | Symfony Cache in PHP                           |
-| Add multi-language          | Config + templates                             |
+| Add multi-language          | Update router array in `index.php` + add `pages/[lang]/` |
+| Configure default language  | Set `DEFAULT_LANGUAGE=en` in `.env` file       |
 
 ---
 

@@ -51,6 +51,8 @@ project-root/
 │   └── react.twig                 # Example page showing React integration
 ├── templates/
 │   └── default.twig               # Base HTML layout (Twig)
+├── components/
+│   └── components.twig            # Reusable Twig components (macros)
 ├── public/
 │   └── assets/build/app.js        # Built JS bundle (from Vite)
 ├── vite.config.js                 # Vite config for building frontend assets

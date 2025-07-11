@@ -47,6 +47,8 @@ project-root/
 │   └── react.twig                 # Example page showing React integration
 ├── templates/
 │   └── default.twig               # Base HTML layout (Twig)
+├── components/
+│   └── components.twig            # Reusable Twig components (macros)
 ├── public/
 │   └── assets/build/app.js        # Built JS bundle (from Vite)
 ├── vite.config.js                 # Vite config for building frontend assets
@@ -270,10 +272,10 @@ STCMS promotes a component-based architecture not just for React, but for server
 Macros are like functions in Twig. You define a piece of reusable HTML with parameters, and then you can call it anywhere you need it.
 
 **How to create them:**
-1.  **Create a central file for your components:** The best practice is to create a file at `templates/components.twig`. The `install:help` command provides a starter file with `button` and `card` components.
+1.  **Create a central file for your components:** The best practice is to create files in the root `components/` directory. The `init` command provides a starter file for you at `components/components.twig`.
 2.  **Define your macros:** Inside this file, define your UI components using `{% macro ... %}`.
 
-    *Example: `templates/components.twig`*
+    *Example: `components/components.twig`*
     ```twig
     {#
       A flexible button component.
@@ -814,8 +816,8 @@ pages/
 |-----------------------------|------------------------------------------------|
 | Create page                 | `pages/[lang]/*.twig`, extend `default.twig`   |
 | **Pass page-specific PHP data** | **Add logic to `renderMultilingualTemplate` in `MultilingualRouter.php`.** |
-| **Create global PHP function for Twig** | **Add a `TwigFunction` in `addCustomFunctions` in `TemplateEngine.twig`.** |
-| Create reusable component   | Define a `{% macro ... %}` in `templates/components.twig`. |
+| **Create global PHP function for Twig** | **Add a `TwigFunction` in `addCustomFunctions` in `TemplateEngine.php`.** |
+| Create reusable component   | Define a `{% macro ... %}` in `components/components.twig`. |
 | Use reusable component    | `{% import "components.twig" as c %}` then `{{ c.my_macro(...) }}`. |
 | Create dynamic page (e.g., product) | Create `pages/en/product.twig`. Access ID via `{{ get_params.id }}`. |
 | **Get URL GET parameters**      | **Use `{{ get_params.your_key }}` inside any Twig file.** |
@@ -853,7 +855,7 @@ These are the most important rules. Do not deviate from them.
 
 4.  **TWIG FOR STRUCTURE, REACT FOR INTERACTIVITY:** Clearly separate these concerns. The main page layout, structure, and non-interactive content are handled by Twig. Complex, stateful, or highly interactive elements (like forms with validation or data dashboards) are handled by React components.
 
-5.  **PROMOTE REUSABLE TWIG COMPONENTS:** For common UI elements (buttons, cards, etc.), instruct users to create and use Twig macros in a central `templates/components.twig` file. This promotes consistency and follows the component-based architecture. Do not have them write raw HTML for these elements repeatedly.
+5.  **PROMOTE REUSABLE TWIG COMPONENTS:** For common UI elements (buttons, cards, etc.), instruct users to create and use Twig macros in the root `components/` directory (e.g., `components/components.twig`). This promotes consistency and follows the component-based architecture. Do not have them write raw HTML for these elements repeatedly.
 
 6.  **NEVER HACK THE CORE:** Users should never be told to modify files inside the `vendor/gemvc/stcms/src` directory, especially the `Core` classes. The library provides all necessary functionality through its public API (routing, templates, CLI).
 
@@ -963,8 +965,8 @@ Understanding these packages helps you explain *why* things work the way they do
 3.  Remind them to check for typos in both the URL and the filename.
 
 **Scenario 5: User wants to add a button to a page.**
-1.  Advise them to use the reusable Twig component for buttons. Check if `templates/components.twig` exists.
-2.  If it doesn't, guide them to create it and provide the standard `button` macro code.
+1.  Advise them to use the reusable Twig component for buttons, which can be found in `components/components.twig`.
+2.  If it doesn't exist, guide them to create it and provide the standard `button` macro code.
 3.  Show them how to import the components file in their page: `{% import "components.twig" as components %}`.
 4.  Instruct them to call the macro to render the button: `{{ components.button(text='My Button', url='/my-link') }}`.
 5.  Explain that using this component ensures all buttons on their site look consistent and are easy to update from one central location.

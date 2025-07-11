@@ -26,6 +26,16 @@ A Composer-installable PHP library for building modern, component-based frontend
 
 ---
 
+## Architecture Overview
+
+- **Twig**: For server-side rendering of pages and templates.
+- **React**: For interactive UI, mounted via a registry-based system.
+- **Vite**: For fast development and production builds of frontend assets.
+- **.htaccess & index.php**: For routing, security, and application bootstrapping.
+- **Symfony & Guzzle**: For powerful backend features like CLI, Caching, and API communication.
+
+---
+
 ## Project Structure (Current)
 
 ```
@@ -120,5 +130,5 @@ project-root/
 
 ---
 
-**STCMS** - Making hybrid PHP/React development simple, powerful, and AI-ready! 🚀
+**STCMS** - Making hybrid Multilanguage PHP/React development simple, powerful, and AI-ready! 🚀
 

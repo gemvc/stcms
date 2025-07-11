@@ -1,0 +1,161 @@
+{% extends "default.twig" %}
+
+{% block title %}How to Use Twig Functional Components{% endblock %}
+
+{# Import the macros from our components file to make them available on this page #}
+{% import "components.twig" as components %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white p-8 rounded-lg shadow-lg">
+        <h1 class="text-4xl font-bold text-red-600 mb-4">How to Use Twig Functional Components</h1>
+        
+        <p class="text-lg text-gray-700 mb-6">
+            In STCMS, you can create powerful, reusable, and purely presentational UI elements using Twig's <code class="bg-gray-200 p-1 rounded">macro</code> feature. We call this pattern "Functional Components." They are perfect for UI elements that don't require complex state management, such as buttons, cards, alerts, or form inputs.
+        </p>
+        <p class="text-lg text-gray-700 mb-6">
+            This approach keeps your code DRY (Don't Repeat Yourself), ensures visual consistency across your site, and uses the power of **Tailwind CSS** for styling.
+        </p>
+
+        <hr class="my-8">
+
+        <h2 class="text-3xl font-semibold text-gray-800 mb-4">Step 1: Create a Component Macro</h2>
+        <p class="text-gray-700 mb-4">
+            It's best practice to define your components in a dedicated file. We have already created one for you at <code class="bg-gray-200 p-1 rounded">templates/components.twig</code>. Let's look at the "button" component inside it:
+        </p>
+        <pre><code class="language-twig">
+{# templates/components.twig #}
+
+{% macro button(text, url, variant='primary', extra_classes='') %}
+    {% set base_classes = 'inline-block text-white font-bold py-2 px-4 rounded-lg shadow-md ...' %}
+    
+    {% set variant_classes = {
+        'primary': 'bg-red-600 hover:bg-red-700',
+        'secondary': 'bg-gray-700 hover:bg-gray-800'
+    } %}
+
+    <a href="{{ url }}" class="{{ base_classes }} {{ variant_classes[variant] }} {{ extra_classes }}">
+        {{ text }}
+    </a>
+{% endmacro %}
+        </code></pre>
+        <p class="text-gray-700 mt-4">
+            This macro accepts parameters like `text` and `url`, and even supports different color `variant`s, all styled with Tailwind CSS.
+        </p>
+        
+        <hr class="my-8">
+
+        <h2 class="text-3xl font-semibold text-gray-800 mb-4">Step 2: Import and Use the Component</h2>
+        <p class="text-gray-700 mb-4">
+            To use the components on any page, you first need to import the file. We give it a namespace (e.g., `components`) to avoid naming conflicts.
+        </p>
+        <pre><code class="language-twig">
+{% import "components.twig" as components %}
+        </code></pre>
+        <p class="text-gray-700 mt-4 mb-4">
+            Now, you can call the macro like a function. Here are some live examples:
+        </p>
+        
+        <div class="bg-gray-50 p-6 rounded-lg border">
+            <h3 class="text-xl font-bold mb-4">Live Button Examples</h3>
+            <div class="flex items-center space-x-4">
+                {{ components.button('Primary Button', '#', 'primary') }}
+                {{ components.button('Secondary', '#', 'secondary') }}
+                {{ components.button('Extra Large', '#', 'primary', 'py-4 px-8 text-xl') }}
+            </div>
+        </div>
+
+        <hr class="my-8">
+
+        <h2 class="text-3xl font-semibold text-gray-800 mb-4">Advanced Example: A Card Component</h2>
+        <p class="text-gray-700 mb-4">
+            This pattern is excellent for more complex structures like cards. Here is the code for our card component:
+        </p>
+        <pre><code class="language-twig">
+{# templates/components.twig #}
+
+{% macro card(title, description, image_url=null) %}
+    <div class="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+        {% if image_url %}
+            <img class="w-full h-48 object-cover" src="{{ image_url }}" alt="{{ title }}">
+        {% endif %}
+        <div class="p-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">{{ title }}</h3>
+            <p class="text-gray-600">
+                {{ description }}
+            </p>
+        </div>
+    </div>
+{% endmacro %}
+        </code></pre>
+
+        <p class="text-gray-700 mt-4 mb-4">
+            And here is how we can use it to render a grid of cards:
+        </p>
+
+        <div class="bg-gray-50 p-6 rounded-lg border">
+            <h3 class="text-xl font-bold mb-4">Live Card Examples</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {{ components.card(
+                    'Reusable Components',
+                    'Creating components directly in Twig is a great way to keep your templates clean and maintainable for presentational UI.',
+                    'https://images.unsplash.com/photo-1555949963-ff98c8726514?w=800&q=80'
+                ) }}
+                {{ components.card(
+                    'Powered by Tailwind CSS',
+                    'All components are styled with utility classes, making them easy to customize without ever leaving your HTML.'
+                ) }}
+            </div>
+        </div>
+
+        <div class="mt-10 text-center">
+             {{ components.button('Learn More About STCMS', '/en/how', 'primary', 'transform hover:scale-110') }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+{# --- templates/components.twig --- #}
+{# This file contains reusable "functional components" using Twig macros. #}
+
+{#
+  A flexible button component.
+  
+  @param  string text          The button's text.
+  @param  string url           The URL for the button's href attribute.
+  @param  string variant       The color variant ('primary', 'secondary'). Defaults to 'primary'.
+  @param  string extra_classes Any additional Tailwind CSS classes to apply.
+#}
+{% macro button(text, url, variant='primary', extra_classes='') %}
+    {% set base_classes = 'inline-block text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105' %}
+    
+    {% set variant_classes = {
+        'primary': 'bg-red-600 hover:bg-red-700',
+        'secondary': 'bg-gray-700 hover:bg-gray-800'
+    } %}
+
+    <a href="{{ url }}" class="{{ base_classes }} {{ variant_classes[variant] }} {{ extra_classes }}">
+        {{ text }}
+    </a>
+{% endmacro %}
+
+
+{#
+  A simple card component for displaying content.
+
+  @param  string title         The title of the card.
+  @param  string description   The main text content for the card.
+  @param  string image_url     (Optional) URL for an image to display at the top of the card.
+#}
+{% macro card(title, description, image_url=null) %}
+    <div class="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+        {% if image_url %}
+            <img class="w-full h-48 object-cover" src="{{ image_url }}" alt="{{ title }}">
+        {% endif %}
+        <div class="p-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">{{ title }}</h3>
+            <p class="text-gray-600">
+                {{ description }}
+            </p>
+        </div>
+    </div>
+{% endmacro %}

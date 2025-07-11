@@ -22,6 +22,7 @@ $apiClient = new ApiClient($_ENV['API_BASE_URL']);
 $templateEngine = new TemplateEngine([
     __DIR__ . '/pages',
     __DIR__ . '/templates',
+    __DIR__ . '/components',
 ]);
 
 // Dynamically find supported languages by scanning the 'pages' directory

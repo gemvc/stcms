@@ -262,7 +262,148 @@ $app->run();
 
 ---
 
-## 12. Registry & Auto-Mounting System
+## 12. Creating Reusable Functional Components with Twig Macros
+
+STCMS promotes a component-based architecture not just for React, but for server-rendered UI as well. Using Twig's `macro` feature, you can create powerful, reusable "functional components" that ensure consistency and speed up development. This is the recommended approach for any UI element that is used more than once.
+
+**What are they?**
+Macros are like functions in Twig. You define a piece of reusable HTML with parameters, and then you can call it anywhere you need it.
+
+**How to create them:**
+1.  **Create a central file for your components:** The best practice is to create a file at `templates/components.twig`. The `install:help` command provides a starter file with `button` and `card` components.
+2.  **Define your macros:** Inside this file, define your UI components using `{% macro ... %}`.
+
+    *Example: `templates/components.twig`*
+    ```twig
+    {#
+      A flexible button component.
+      @param string text The button's text.
+      @param string url  The URL for the button's href.
+      @param string variant ('primary' or 'secondary')
+    #}
+    {% macro button(text, url, variant='primary') %}
+        {% set colors = {
+            'primary': 'bg-red-600 hover:bg-red-700',
+            'secondary': 'bg-gray-700 hover:bg-gray-800'
+        } %}
+        <a href="{{ url }}" class="inline-block text-white font-bold py-2 px-4 rounded transition-transform hover:scale-105 {{ colors[variant] }}">
+            {{ text }}
+        </a>
+    {% endmacro %}
+    ```
+
+**How to use them:**
+1.  **Import the macros** at the top of any page where you want to use a component.
+2.  **Call the macro** like a function, passing in the required parameters.
+
+    *Example: Using the button in `pages/en/index.twig`*
+    ```twig
+    {% extends "default.twig" %}
+    {% import "components.twig" as components %} {# 1. Import the components file #}
+    
+    {% block content %}
+      <h1 class="text-3xl">Welcome!</h1>
+      
+      {# 2. Use the component #}
+      <div class="mt-4 flex gap-4">
+          {{ components.button(text='Learn More', url='/en/how', variant='primary') }}
+          {{ components.button(text='Contact Us', url='/en/contact', variant='secondary') }}
+      </div>
+    {% endblock %}
+    ```
+This approach is strongly recommended for any UI element that appears in multiple places, such as buttons, cards, alerts, or form inputs. It keeps your code DRY (Don't Repeat Yourself) and makes site-wide styling changes trivial.
+
+---
+
+## 13. Using PHP Logic & Data in Twig Templates
+A key part of building a dynamic website is passing data from your PHP backend to your Twig frontend. The most important rule is to **separate your logic from your presentation**. PHP should handle the logic (fetching from a database, calling an API, running calculations), and Twig should handle the display.
+
+There are two primary ways to make your PHP logic and data available to Twig.
+
+### Method 1: Passing Page-Specific Data from the Router
+This is the standard approach for data that is needed by a specific page or a small group of pages. The logic should be placed in the `MultilingualRouter.php` file, which is responsible for preparing and rendering templates.
+
+**How it works:**
+The `renderMultilingualTemplate` method in `src/Core/MultilingualRouter.php` prepares a `$data` array that gets passed to every Twig template. You can add your own page-specific data to this array.
+
+**Example: Passing a list of products to a "Shop" page:**
+1.  Open `src/Core/MultilingualRouter.php`.
+2.  Navigate to the `renderMultilingualTemplate` method.
+3.  Just before the `try...catch` block that calls `$templateEngine->render()`, add your logic.
+
+```php
+// ... inside renderMultilingualTemplate method
+// Prepare base template data, always available
+$data = [
+    // ... existing data (user, jwt, lang, etc.)
+];
+
+// --- ADD YOUR PAGE-SPECIFIC LOGIC HERE ---
+// Example: if the current page is the 'shop' page, fetch product data.
+if ($subpath === 'shop') {
+    // In a real app, you would fetch this from an API or database.
+    $products = [
+        ['id' => 1, 'name' => 'Awesome Gadget', 'price' => '29.99'],
+        ['id' => 2, 'name' => 'Cool Gizmo', 'price' => '49.99'],
+        ['id' => 3, 'name' => 'Shiny Thing', 'price' => '19.99'],
+    ];
+    $data['products'] = $products;
+}
+
+// The $data array is now passed to the renderer below.
+try {
+    // ... existing render calls
+```
+
+4.  **Use the data in your Twig file** (`pages/en/shop.twig`):
+```twig
+{% extends "default.twig" %}
+{% block content %}
+    <h1 class="text-2xl">Our Products</h1>
+    <ul>
+        {% for product in products %}
+            <li>{{ product.name }} - ${{ product.price }}</li>
+        {% else %}
+            <p>No products found.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}
+```
+
+### Method 2: Creating Reusable Global Functions
+This is the best approach for functions that you want to be available in *any* Twig template, such as utility functions for formatting dates, getting global configuration, or performing a common calculation.
+
+**How it works:**
+You can register your own custom PHP functions with the Twig environment in the `TemplateEngine.php` file.
+
+**Example: Creating a `format_price` function:**
+1.  Open `src/Core/TemplateEngine.php`.
+2.  Navigate to the `addCustomFunctions` method.
+3.  Add a new `TwigFunction`. You can define the function inline as a closure or point to any existing static or regular function.
+
+```php
+// ... inside addCustomFunctions method
+// Add is_authenticated function
+$this->twig->addFunction(new \Twig\TwigFunction('is_authenticated', function () {
+    return isset($_SESSION['jwt']);
+}));
+
+// --- ADD YOUR NEW FUNCTION HERE ---
+$this->twig->addFunction(new \Twig\TwigFunction('format_price', function (string $price, string $currency = '$') {
+    return $currency . number_format((float)$price, 2);
+}));
+```
+4.  **Use the function anywhere in your Twig templates:**
+```twig
+<p>Price: {{ format_price(product.price) }}</p> {# Output: $49.99 #}
+<p>Price in Euros: {{ format_price(product.price, '€') }}</p> {# Output: €49.99 #}
+```
+
+This makes your custom PHP functions available globally as if they were built-in Twig functions.
+
+---
+
+## 14. Registry & Auto-Mounting System
 - **Purpose:** Maps DOM element IDs to React components and prop-parsing functions.
 - **How it works:**
   - `registry.js` defines which components to mount and how to parse their props from `data-*` attributes.
@@ -289,7 +430,7 @@ $app->run();
 
 ---
 
-## 13. Passing Data from PHP/Twig to React
+## 15. Passing Data from PHP/Twig to React
 - Use `data-*` attributes in your HTML:
   ```twig
   <div id="user-profile-root" data-user='{{ user|json_encode }}' data-jwt="{{ jwt }}"></div>
@@ -304,14 +445,14 @@ $app->run();
 
 ---
 
-## 14. Building and Serving
+## 16. Building and Serving
 - **Development:** `npm run dev` (Vite dev server)
 - **Production:** `npm run build` (outputs to `public/assets/build/app.js`)
 - **PHP Server:** `php -S localhost:8000` (from project root)
 
 ---
 
-## 15. Advanced Features & Best Practices
+## 17. Advanced Features & Best Practices
 
 ### Security & Authentication
 - JWT is only exposed to React if authenticated.
@@ -606,7 +747,7 @@ pages/
 
 ---
 
-## 16. Example Q&A for AI Assistant
+## 18. Example Q&A for AI Assistant
 
 **Q: How do I create a new page with a React component?**
 > 1. Create `pages/about.twig` and extend `default.twig`.
@@ -647,9 +788,15 @@ pages/
 **Q: What happens when someone visits `/invalid/page`?**
 > The router detects that `invalid` is not in the list of automatically detected languages, so it falls back to the default language and serves `pages/[default_lang]/page.twig` instead.
 
+**Q: How do I get data from my database onto a page?**
+> For page-specific data, you should add your database fetching logic to `src/Core/MultilingualRouter.php` in the `renderMultilingualTemplate` method. Check the current path, fetch your data, and add it to the `$data` array before it's passed to the renderer.
+
+**Q: How can I create a global function, like `get_setting('site_name')`, to use in any template?**
+> You should register it as a custom function in `src/Core/TemplateEngine.php`. In the `addCustomFunctions` method, add a new `TwigFunction` that points to your PHP `get_setting` logic. Then you can call `{{ get_setting('site_name') }}` in any `.twig` file.
+
 ---
 
-## 17. Benefits & Philosophy of STCMS
+## 19. Benefits & Philosophy of STCMS
 - Clean separation of backend, pages, templates, and frontend components
 - Fast, SEO-friendly, and interactive
 - Works on most hosting (APCu/file cache)
@@ -661,12 +808,16 @@ pages/
 
 ---
 
-## 18. Quick Reference Table
+## 20. Quick Reference Table
 
 | Task                        | How/Where                                      |
 |-----------------------------|------------------------------------------------|
 | Create page                 | `pages/[lang]/*.twig`, extend `default.twig`   |
-| **Create dynamic page (e.g., product)** | **Create `pages/en/product.twig`. Access ID via `{{ get_params.id }}`.** |
+| **Pass page-specific PHP data** | **Add logic to `renderMultilingualTemplate` in `MultilingualRouter.php`.** |
+| **Create global PHP function for Twig** | **Add a `TwigFunction` in `addCustomFunctions` in `TemplateEngine.twig`.** |
+| Create reusable component   | Define a `{% macro ... %}` in `templates/components.twig`. |
+| Use reusable component    | `{% import "components.twig" as c %}` then `{{ c.my_macro(...) }}`. |
+| Create dynamic page (e.g., product) | Create `pages/en/product.twig`. Access ID via `{{ get_params.id }}`. |
 | **Get URL GET parameters**      | **Use `{{ get_params.your_key }}` inside any Twig file.** |
 | Create template/layout      | `templates/*.twig`, use Twig blocks            |
 | Create React component      | `assets/js/components/*.jsx`, export default   |
@@ -680,7 +831,7 @@ pages/
 
 ---
 
-## 20. Appendix: For AI Assistants
+## 21. Appendix: For AI Assistants
 
 This section provides specific instructions and guidelines for AI assistants to ensure they provide accurate and helpful support to STCMS users.
 
@@ -702,7 +853,9 @@ These are the most important rules. Do not deviate from them.
 
 4.  **TWIG FOR STRUCTURE, REACT FOR INTERACTIVITY:** Clearly separate these concerns. The main page layout, structure, and non-interactive content are handled by Twig. Complex, stateful, or highly interactive elements (like forms with validation or data dashboards) are handled by React components.
 
-5.  **NEVER HACK THE CORE:** Users should never be told to modify files inside the `vendor/gemvc/stcms/src` directory, especially the `Core` classes. The library provides all necessary functionality through its public API (routing, templates, CLI).
+5.  **PROMOTE REUSABLE TWIG COMPONENTS:** For common UI elements (buttons, cards, etc.), instruct users to create and use Twig macros in a central `templates/components.twig` file. This promotes consistency and follows the component-based architecture. Do not have them write raw HTML for these elements repeatedly.
+
+6.  **NEVER HACK THE CORE:** Users should never be told to modify files inside the `vendor/gemvc/stcms/src` directory, especially the `Core` classes. The library provides all necessary functionality through its public API (routing, templates, CLI).
 
 ---
 
@@ -808,6 +961,13 @@ Understanding these packages helps you explain *why* things work the way they do
 1.  Ask them to verify the URL they are using.
 2.  Ask them to confirm the file path. The path must exactly match the URL. (e.g., URL `/en/about` requires file `pages/en/about.twig`).
 3.  Remind them to check for typos in both the URL and the filename.
+
+**Scenario 5: User wants to add a button to a page.**
+1.  Advise them to use the reusable Twig component for buttons. Check if `templates/components.twig` exists.
+2.  If it doesn't, guide them to create it and provide the standard `button` macro code.
+3.  Show them how to import the components file in their page: `{% import "components.twig" as components %}`.
+4.  Instruct them to call the macro to render the button: `{{ components.button(text='My Button', url='/my-link') }}`.
+5.  Explain that using this component ensures all buttons on their site look consistent and are easy to update from one central location.
 
 ---
 

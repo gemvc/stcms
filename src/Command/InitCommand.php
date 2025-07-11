@@ -31,6 +31,7 @@ class InitCommand extends Command
             'assets/js/components',
             'assets/css',
             'public/assets/build', // Ensure build directory exists
+            'components', // Create components directory
         ];
         foreach ($dirs as $dir) {
             $fs->mkdir($dir);
@@ -79,6 +80,9 @@ class InitCommand extends Command
         // Copy assets from the main setup folder
         $this->copyAssets($fs, $rootSetupDir, $output);
 
+        // Copy reusable components from the main setup folder
+        $this->copyComponents($fs, $rootSetupDir, $output);
+
         // Copy index.php from the main setup folder
         $indexContent = file_get_contents($rootSetupDir . '/index.php');
         $fs->dumpFile('index.php', $indexContent);
@@ -117,5 +121,15 @@ class InitCommand extends Command
         $fs->dumpFile('assets/js/registry.js', $registryContent);
 
         $output->writeln('<comment>Copied assets.</comment>');
+    }
+
+    private function copyComponents(Filesystem $fs, string $setupDir, OutputInterface $output): void
+    {
+        // Copy all component files from setup
+        foreach (glob($setupDir . '/components.twig') as $componentFile) {
+            $basename = basename($componentFile);
+            $fs->dumpFile('components/' . $basename, file_get_contents($componentFile));
+        }
+        $output->writeln('<comment>Copied components.</comment>');
     }
 } 

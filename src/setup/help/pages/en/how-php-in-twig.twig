@@ -1,0 +1,107 @@
+{% extends "default.twig" %}
+
+{% block title %}How to Use PHP Logic in Twig{% endblock %}
+
+{% import "components.twig" as components %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white p-8 rounded-lg shadow-lg">
+        <h1 class="text-4xl font-bold text-red-600 mb-4">Using PHP Logic & Data in Twig Templates</h1>
+        
+        <p class="text-lg text-gray-700 mb-6">
+            A key part of building a dynamic website is passing data from your PHP backend to your Twig frontend. STCMS follows a core principle: **separation of concerns**. PHP handles the logic (fetching data, calculations), and Twig handles the presentation (displaying the data).
+        </p>
+        <p class="text-lg text-gray-700 mb-6">
+            You should never write raw PHP inside your <code class="bg-gray-200 p-1 rounded">.twig</code> files. Instead, here are the two recommended methods for making your PHP logic available to your templates.
+        </p>
+
+        <hr class="my-8">
+
+        <h2 class="text-3xl font-semibold text-gray-800 mb-4">Method 1: Passing Page-Specific Data</h2>
+        <p class="text-gray-700 mb-4">
+            This is the standard approach for data that is only needed by one specific page. The logic should be placed inside the core router file, which is responsible for rendering your templates.
+        </p>
+        <p class="text-gray-700 mb-4">
+            The file to edit is <code class="bg-gray-200 p-1 rounded">src/Core/MultilingualRouter.php</code>, inside the <code class="bg-gray-200 p-1 rounded">renderMultilingualTemplate</code> method. Here, you can add logic to fetch data and add it to the <code class="bg-gray-200 p-1 rounded">$data</code> array that gets passed to the template.
+        </p>
+        
+        <h3 class="text-xl font-bold text-gray-800 my-4">Example: Creating a "Team Members" Page</h3>
+        <p class="text-gray-700 mb-4">
+            Let's say we want to display a list of team members on our <code class="bg-gray-200 p-1 rounded">/about</code> page.
+        </p>
+        
+        <p class="text-gray-700 mb-2 font-semibold">1. Add the logic to the router:</p>
+        <pre><code class="language-php">
+// In src/Core/MultilingualRouter.php, inside renderMultilingualTemplate()
+
+// ... after the initial $data array is created ...
+
+// --- ADD YOUR PAGE-SPECIFIC LOGIC HERE ---
+if ($subpath === 'about') {
+    $team = [
+        ['name' => 'Alice', 'role' => 'Lead Developer'],
+        ['name' => 'Bob', 'role' => 'Project Manager'],
+    ];
+    $data['team_members'] = $team; // Add it to the $data array
+}
+
+try {
+    // ... rest of the render logic
+}
+        </code></pre>
+        
+        <p class="text-gray-700 mt-4 mb-2 font-semibold">2. Display the data in your Twig file (<code class="bg-gray-200 p-1 rounded">pages/en/about.twig</code>):</p>
+        <pre><code class="language-twig">
+<h3>Our Team</h3>
+<ul>
+    {% for member in team_members %}
+        <li>{{ member.name }} - {{ member.role }}</li>
+    {% else %}
+        <p>Team information is not available.</p>
+    {% endfor %}
+</ul>
+        </code></pre>
+
+        <hr class="my-8">
+
+        <h2 class="text-3xl font-semibold text-gray-800 mb-4">Method 2: Creating Reusable Global Functions</h2>
+        <p class="text-gray-700 mb-4">
+            For logic you want to reuse across many different pages (like a utility function), the best approach is to register it as a global Twig function.
+        </p>
+        <p class="text-gray-700 mb-4">
+            The file to edit is <code class="bg-gray-200 p-1 rounded">src/Core/TemplateEngine.php</code>, inside the <code class="bg-gray-200 p-1 rounded">addCustomFunctions</code> method.
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 my-4">Example: Creating a Global `get_setting` Function</h3>
+        <p class="text-gray-700 mb-4">Let's create a function that can retrieve a setting from a global config array.</p>
+
+        <p class="text-gray-700 mb-2 font-semibold">1. Define and register the function:</p>
+        <pre><code class="language-php">
+// In src/Core/TemplateEngine.php, inside addCustomFunctions()
+
+// --- ADD YOUR NEW FUNCTION HERE ---
+$this->twig->addFunction(new \Twig\TwigFunction('get_setting', function (string $key) {
+    // In a real app, this might come from a database or a config file
+    $site_settings = [
+        'site_name' => 'STCMS Project',
+        'contact_email' => 'contact@example.com',
+    ];
+    return $site_settings[$key] ?? 'Setting not found';
+}));
+        </code></pre>
+
+        <p class="text-gray-700 mt-4 mb-2 font-semibold">2. Use the function in any Twig file:</p>
+        <pre><code class="language-twig">
+&lt;footer&gt;
+    &copy; {{ "now"|date("Y") }} {{ get_setting('site_name') }}.
+    Contact us at {{ get_setting('contact_email') }}.
+&lt;/footer&gt;
+        </code></pre>
+
+        <div class="mt-10 text-center">
+             {{ components.button('Back to "How-To" List', '/en/how', 'primary') }}
+        </div>
+    </div>
+</div>
+{% endblock %}

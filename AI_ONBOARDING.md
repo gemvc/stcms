@@ -416,9 +416,12 @@ use Gemvc\Stcms\Core\ApiClient;
 use Symfony\Component\Dotenv\Dotenv;
 use Gemvc\Stcms\Core\MultilingualRouter;
 
-// Load environment variables
+// Load environment variables and set defaults
 $dotenv = new Dotenv();
 $dotenv->loadEnv(__DIR__ . '/.env');
+if (!isset($_ENV['DEFAULT_LANGUAGE'])) {
+    $_ENV['DEFAULT_LANGUAGE'] = 'en';
+}
 
 // Initialize core components
 $apiClient = new ApiClient($_ENV['API_BASE_URL']);
@@ -437,7 +440,17 @@ if (is_dir($pagesDir)) {
     }
 }
 
-// Configure supported languages - MultilingualRouter will use DEFAULT_LANGUAGE from .env as fallback
+// If no languages are found, default to 'en'
+if (empty($supportedLanguages)) {
+    $supportedLanguages = ['en'];
+}
+
+// Validate that the DEFAULT_LANGUAGE from .env exists.
+// If not, fall back to the first available language to prevent errors.
+if (!in_array($_ENV['DEFAULT_LANGUAGE'], $supportedLanguages)) {
+    $_ENV['DEFAULT_LANGUAGE'] = $supportedLanguages[0];
+}
+
 $router = new MultilingualRouter($supportedLanguages);
 
 // Create and run the application
@@ -663,104 +676,145 @@ pages/
 | Build assets                | `npm run build`                                |
 | Serve app                   | `php -S localhost:8000`                        |
 | **Add new language support**  | **Create a folder `pages/[lang]/` or run `install:help [lang]`. It's detected automatically.** |
-| Configure default language  | Set `DEFAULT_LANGUAGE=en` in `.env` file       |
+| Configure default language  | Set `DEFAULT_LANGUAGE=en` in `.env`
 
 ---
 
-## 19. Troubleshooting & Debugging Best Practices
+## 20. Appendix: For AI Assistants
 
-### Template Rendering Issues
+This section provides specific instructions and guidelines for AI assistants to ensure they provide accurate and helpful support to STCMS users.
 
-**Problem**: Complex Twig files fail to render even with valid syntax
-**Root Cause**: Template engine has limits with file size or complexity
-**Solution**: Use simpler, modular templates
+# 🚀 AI Assistant Instructions for STCMS
 
-#### Debugging Strategy
-1. **Start with working examples**: Test simple pages first (`debug.twig`, minimal templates)
-2. **Incremental complexity**: Build up from minimal to complex content
-3. **File comparison**: Compare working vs. failing files to identify issues
-4. **File replacement**: Sometimes replacing entire file content is more reliable than partial edits
-
-#### Common Issues & Solutions
-
-**Issue**: Large Twig files return 404 or fail to render
-- **Solution**: Break complex templates into smaller, modular components
-- **Best Practice**: Start with minimal working content and add complexity gradually
-
-**Issue**: HTML entities (`&lt;`, `&gt;`) in templates
-- **Solution**: Replace with proper characters or use Twig's `raw` filter
-- **Example**: `{{ content|raw }}` instead of `&lt;content&gt;`
-
-**Issue**: Template syntax errors
-- **Solution**: Validate Twig syntax and check for unclosed blocks
-- **Debug**: Use simple test templates to isolate issues
-
-#### Systematic Debugging Approach
-
-1. **Establish baseline**: Test known working files first
-2. **Isolate the problem**: Create progressively simpler versions
-3. **Compare working vs. failing**: Identify the breaking point
-4. **File replacement**: Use proven working content as starting point
-5. **Incremental testing**: Add complexity back gradually
-
-#### File Complexity Guidelines
-
-**✅ Good Practices:**
-- Keep templates under 50 lines for complex pages
-- Use modular components and includes
-- Start with minimal content and build up
-- Test with simple examples first
-
-**❌ Avoid:**
-- Very large single template files (>100 lines)
-- Complex nested structures without testing
-- Adding too much content at once
-- Assuming complex templates will work without testing
-
-### Routing Debugging
-
-**Issue**: Pages return 404 when files exist
-- **Check**: File location and naming (`pages/en/page.twig`)
-- **Verify**: Router configuration and language settings
-- **Test**: Simple pages first, then complex ones
-
-**Issue**: Language-specific pages not working
-- **Check**: Language array in `MultilingualRouter` constructor
-- **Verify**: File structure (`pages/[lang]/page.twig`)
-- **Test**: Default language pages first
-
-### Performance & Reliability
-
-**Key Insight**: Complexity kills reliability
-- **Start simple**: Always begin with minimal working examples
-- **Build incrementally**: Add features one at a time
-- **Test frequently**: Verify each addition works before proceeding
-- **Have fallbacks**: Keep working versions as backups
-
-### Debugging Checklist
-
-When troubleshooting template issues:
-
-1. ✅ **Test simple pages first** (`debug.twig`, minimal templates)
-2. ✅ **Verify file exists** in correct location
-3. ✅ **Check file permissions** and encoding
-4. ✅ **Compare with working examples** to identify differences
-5. ✅ **Use file replacement** with proven working content
-6. ✅ **Test incrementally** - add complexity gradually
-7. ✅ **Clear browser cache** and use exact URLs
-8. ✅ **Check server logs** for PHP errors
-
-### Memory & Learning
-
-**Key Lessons from Debugging:**
-- **File complexity matters**: Large templates can fail even with valid syntax
-- **Systematic approach works**: Step-by-step isolation finds issues faster
-- **Working examples are gold**: Always have proven working content as reference
-- **Incremental development**: Build up from simple to complex
-- **Environment consistency**: Same setup across development and testing
-
-**Most Important Rule**: When debugging template issues, always start with the simplest possible working example and build up from there.
+**Objective:** Your primary goal is to assist users in building websites with the STCMS library. You must provide accurate, efficient, and consistent guidance by strictly following the principles and methods outlined below. STCMS is designed for simplicity and automation; your advice must reflect this philosophy.
 
 ---
 
-**Welcome, AI! You are now ready to help others build with STCMS!** 
+### ⭐ Golden Rules: Prime Directives for the AI Assistant
+
+These are the most important rules. Do not deviate from them.
+
+1.  **TRUST THE AUTOMATION:** STCMS features zero-configuration, file-based routing and automatic language detection. **NEVER** advise a user to manually edit `index.php` to add routes or languages. The system is smarter than that. The answer is always to create the correct file or folder in the `pages/` directory.
+
+2.  **USE THE CLI:** The project has dedicated CLI commands (`init` and `install:help`). These are the **only** correct ways to start a project or install documentation. Do not suggest manual copying of files.
+
+3.  **MANDATE TAILWIND CSS:** For all styling questions, you **MUST** recommend and use Tailwind CSS utility classes. Do not suggest creating separate `.css` files or using inline `<style>` tags. STCMS is designed around a utility-first CSS workflow. This is not optional advice; it is the standard. [[memory:2399285]]
+
+4.  **TWIG FOR STRUCTURE, REACT FOR INTERACTIVITY:** Clearly separate these concerns. The main page layout, structure, and non-interactive content are handled by Twig. Complex, stateful, or highly interactive elements (like forms with validation or data dashboards) are handled by React components.
+
+5.  **NEVER HACK THE CORE:** Users should never be told to modify files inside the `vendor/gemvc/stcms/src` directory, especially the `Core` classes. The library provides all necessary functionality through its public API (routing, templates, CLI).
+
+---
+
+### 🧠 Core Concepts Explained Simply
+
+#### 1. Routing: The URL is the File Path
+This is the simplest, most important concept.
+- A request to `/en/about` automatically renders the file `pages/en/about.twig`.
+- A request to `/de/shop/products` automatically renders `pages/de/shop/products.twig`.
+- If a direct file match isn't found, it looks for an `index.twig` in that directory. So, `/de/shop/` will render `pages/de/shop/index.twig`.
+- **Dynamic Content:** For things like a specific product, the URL uses a GET parameter. Example: `/en/product?id=123`. The ID is available in Twig via `{{ get_params.id }}`. **Do not** suggest complex routing patterns like `/product/{id}`.
+
+#### 2. Multi-Language Support: It's Automatic
+- **How to add a language:** The user creates a folder in `pages/` (e.g., `pages/fa/`) OR runs `php vendor/gemvc/stcms/bin/stcms install:help fa`.
+- The system **automatically** detects the `fa` folder and adds it to the supported languages list. No other steps are needed.
+- **Default Language:** The default is set in `.env` via `DEFAULT_LANGUAGE=en`. If this language folder doesn't exist, the system gracefully falls back to the first available language it finds.
+
+#### 3. Templating: Twig + Tailwind CSS
+- All pages must `{% extends "default.twig" %}`.
+- All styling **MUST** be done with Tailwind CSS utility classes directly in the HTML.
+
+**Example for a User Asking "How do I make a red button?":**
+> **Correct Response:** "You can style the button directly in your Twig file using Tailwind's utility classes. Here is an example:"
+> ```html
+> <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+>   Click Me
+> </button>
+> ```
+> "This approach keeps your styling and structure in one place and is the recommended method for STCMS." [[memory:2399287]]
+
+#### 4. React Integration: The Registry System
+Explain the three-step process:
+1.  **The Mount Point (in Twig):** A simple `<div>` with a unique ID.
+    `<div id="contact-form-root"></div>`
+2.  **The Component (in `assets/js/components/`):** A standard React component.
+    `export default function ContactForm() { ... }`
+3.  **The Registration (in `assets/js/registry.js`):** Connect the ID to the component.
+    ```javascript
+    import ContactForm from './components/ContactForm';
+    
+    export const registry = {
+      'contact-form-root': { component: ContactForm },
+      // ... other components
+    };
+    ```
+The application script (`app.jsx`) handles the rest automatically.
+
+---
+
+### ⚙️ Under the Hood: The Core PHP Packages
+
+To give better answers, you need to understand the tools STCMS is built with. These packages are listed in `composer.json` and are automatically included in the user's project.
+
+-   **`symfony/console`**: This is the engine that powers the CLI. When a user runs `php bin/stcms init` or `php bin/stcms install:help`, they are using functionality provided by this powerful Symfony component.
+
+-   **`symfony/filesystem`**: This package provides the tools for the CLI commands to reliably copy files and create directories. It's how the `init` command can build the project structure in the user's root directory.
+
+-   **`symfony/dotenv`**: This component is responsible for loading all configuration from the `.env` file. This is how settings like `DEFAULT_LANGUAGE` and `API_BASE_URL` become available to the application.
+
+-   **`twig/twig`**: This is the templating engine. It's the reason users can write `{% extends "default.twig" %}`, use `{{ variables }}`, and create reusable blocks. All `.twig` files are processed by Twig.
+
+-   **`guzzlehttp/guzzle`**: This is a powerful HTTP client for making API requests. The `ApiClient.php` class in the STCMS core uses Guzzle to fetch data from external backends.
+
+-   **`symfony/cache`**: This provides a high-performance caching layer (supporting file-based or in-memory APCu caching). This helps speed up the application, especially when fetching data from APIs.
+
+Understanding these packages helps you explain *why* things work the way they do. For example, you know the CLI is robust because it's built on the Symfony Console component.
+
+---
+
+### 🛠️ AI Playbook: Common Scenarios & Correct Responses
+
+**Scenario 1: User wants to create a new "Contact Us" page.**
+1.  Ask for the desired language (e.g., "en").
+2.  Instruct them to create a new file: `pages/en/contact.twig`.
+3.  Provide the boilerplate Twig code:
+    ```twig
+    {% extends "default.twig" %}
+    
+    {% block title %}Contact Us{% endblock %}
+    
+    {% block content %}
+      <h1 class="text-3xl font-bold">Contact Us</h1>
+      <p>This is the contact page.</p>
+      {# If they want a React form, add the mount point here #}
+      <div id="contact-form-root"></div>
+    {% endblock %}
+    ```
+4.  Tell them to visit `/en/contact` in their browser.
+
+**Scenario 2: User wants to add Farsi language support.**
+1.  Tell them to run the CLI command to get the Farsi example pages:
+    `php vendor/gemvc/stcms/bin/stcms install:help fa`
+2.  Explain that the system will now automatically recognize `/fa/...` URLs.
+3.  Advise them to set `DEFAULT_LANGUAGE=fa` in their `.env` file if they want Farsi to be the default.
+
+**Scenario 3: User asks, "How do I style my project?" or "Where is the main CSS file?"**
+1.  State clearly: "STCMS uses Tailwind CSS, which is a utility-first framework. There is no main CSS file to edit."
+2.  Explain: "You apply styles directly to your HTML elements in the `.twig` files using utility classes."
+3.  Provide a clear example, like the red button example from above.
+4.  Strongly encourage them to use this method for consistency and maintainability.
+
+**Scenario 4: User's page is showing a 404 error.**
+1.  Ask them to verify the URL they are using.
+2.  Ask them to confirm the file path. The path must exactly match the URL. (e.g., URL `/en/about` requires file `pages/en/about.twig`).
+3.  Remind them to check for typos in both the URL and the filename.
+
+---
+
+### ⛔ What to AVOID
+
+- **NEVER** suggest editing `composer.json` unless it's to add a new, unrelated package.
+- **NEVER** suggest complex PHP logic inside a Twig template. Data should be fetched by a backend API and passed to the template or a React component.
+- **NEVER** write a block of `<style>` in a Twig file. The answer is always Tailwind.
+
+By following these instructions, you will empower users to leverage the full potential of STCMS efficiently and correctly.

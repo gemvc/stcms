@@ -319,28 +319,37 @@ $app->run();
 - Use `ApiClient.php` for API calls (with Guzzle, JWT, and caching).
 - Use Symfony Cache (APCu/file) for performance.
 
-### 🚀 The Automatic Routing System: Dynamic Pages Made Easy
-**IMPORTANT: The router is now powerful enough to handle dynamic pages AUTOMATICALLY. You do NOT need to write custom routes in `index.php` for most cases.**
+### 🚀 The Routing System: Simple, Predictable, and Powerful
+**IMPORTANT: The router uses a simple and direct file-based routing system. You do NOT need to write custom routes in `index.php` for most cases.**
 
-The `MultilingualRouter` has been upgraded to intelligently handle two common URL patterns out-of-the-box, making development faster and keeping your `index.php` clean.
+The `MultilingualRouter` has been designed for maximum clarity and predictability. The core philosophy is simple: **The URL path directly maps to a file path in your `pages` directory.**
 
-#### Part 1: Automatic Dynamic Routes (e.g., `/product/{id}`)
-This is perfect for pages like blog posts, products, user profiles, etc., where you have a template and a unique identifier in the URL.
+#### How File-Based Routing Works
+The router takes the path from the URL (after the language part) and looks for a corresponding `.twig` file. This allows for intuitive page creation and supports nested subdirectories without any configuration. The system has two simple rules:
+
+1.  **Direct Match:** It first looks for a `.twig` file that exactly matches the URL path.
+    -   A request to `/en/about` tries to render `pages/en/about.twig`.
+    -   A request to `/en/shop/categories` tries to render `pages/en/shop/categories.twig`.
+
+2.  **Index Fallback:** If a direct match is not found, it checks if the path corresponds to a directory and tries to load an `index.twig` file inside it.
+    -   A request to `/en/shop/` (or `/en/shop`) will try to render `pages/en/shop/index.twig` if `pages/en/shop.twig` does not exist.
+
+This dual-check system provides flexibility, allowing you to organize your pages logically into folders, with each folder having its own default page.
+
+---
+
+#### How to Handle Dynamic Content (e.g., Product Pages)
+Since the URL path maps directly to a file, how do you handle pages for specific items like a product or a blog post? The answer is to use standard **GET parameters**.
 
 **How It Works:**
-The router automatically detects a URL pattern of `/{lang}/{template_name}/{id}`.
-
-1.  **URL Request:** A user visits `http://localhost:8000/en/product/123-abc`
-2.  **Router Detection:** The router sees three parts after the language (`en`):
-    - `product` (as the template name)
-    - `123-abc` (as the ID)
-3.  **Template Matching:** It looks for a template file at `pages/en/product.twig`.
-4.  **Automatic Rendering:** If the template exists, the router renders it and **automatically passes the `id` variable** to it.
+1.  **Create a generic template:** Create a single template for all items, e.g., `pages/en/product.twig`.
+2.  **Pass ID in URL:** Access a specific product by passing its ID as a GET parameter: `http://localhost:8000/en/product?id=123-abc`
+3.  **Access data in Twig:** The router automatically captures all GET parameters and makes them available in your template inside a variable called `get_params`.
 
 **Example Implementation:**
-To create a dynamic product page, you only need to do ONE thing:
+To create a "dynamic" product page, follow these steps:
 
-1.  **Create the Twig file `pages/en/product.twig`:**
+1.  **Create the template file `pages/en/product.twig`:**
     ```twig
     {% extends "default.twig" %}
 
@@ -349,53 +358,24 @@ To create a dynamic product page, you only need to do ONE thing:
     {% block content %}
         <h1>Product Details</h1>
         
-        {# The 'id' variable is automatically available! #}
-        {% if id %}
-            <p><strong>Product ID:</strong> {{ id }}</p>
+        {# Access the ID from the 'get_params' variable #}
+        {% if get_params.id %}
+            <p><strong>Product ID:</strong> {{ get_params.id }}</p>
+        {% else %}
+            <p>No product ID provided.</p>
+        {% endif %}
+
+        {# You can also display other GET parameters #}
+        {% if get_params.color %}
+            <p><strong>Color:</strong> {{ get_params.color }}</p>
         {% endif %}
     {% endblock %}
     ```
 
-That's it! **No changes are needed in `index.php`**. The page `http://localhost:8000/en/product/some-other-id` will just work.
+2.  **Link to your product page:**
+    `<a href="/en/product?id=123-abc&color=blue">View Product</a>`
 
----
-
-#### Part 2: Automatic GET Parameter Handling
-The router now automatically captures all GET parameters (the part of the URL after `?`) and makes them available in your templates.
-
-**How It Works:**
-1.  **URL Request:** A user visits `http://localhost:8000/en/product/123-abc?color=blue&ref=google`
-2.  **Router Capture:** The router separates the main path from the query string.
-3.  **Automatic Data Injection:** It passes all GET parameters to the template inside a variable called `get_params`.
-
-**Example Implementation:**
-You can access these parameters directly in any Twig template.
-
-1.  **Modify your `pages/en/product.twig` file:**
-    ```twig
-    {# ... inside the content block ... #}
-
-    {% if get_params is not empty %}
-        <div style="margin-top: 20px; padding: 15px; border: 1px solid #ddd;">
-            <h3>Query Parameters Received:</h3>
-            <ul>
-                {# Loop through all available GET parameters #}
-                {% for key, value in get_params %}
-                    <li>
-                        <strong>{{ key }}:</strong> {{ value }}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-    ```
-With this code, visiting `/en/product/123-abc?color=blue&ref=google` will display:
-- **Product ID:** 123-abc
-- A list containing:
-    - **color:** blue
-    - **ref:** google
-
-This covers almost all common use cases for a web application without ever needing to touch the `index.php` file for routing.
+This approach is extremely robust, predictable, and aligns with standard web practices. It completely removes any ambiguity about what a part of a URL represents.
 
 ### Multi-language Support with Environment-Based Default Language
 
@@ -606,13 +586,10 @@ pages/
 **Q: How do I build and serve the project?**
 > Use `npm run build` for assets and `php -S localhost:8000` for the PHP server.
 
-**Q: How do I add API integration or caching?**
-> Use `ApiClient.php` for API calls and Symfony Cache for caching responses.
-
-**Q: How do I create a dynamic page like a blog post or product page?**
-> 1.  Simply create the template file, for example, `pages/en/blog.twig`.
-> 2.  The router will automatically handle URLs like `/en/blog/{post-id}`.
-> 3.  Inside `blog.twig`, you can directly use the `{{ id }}` variable to get the `{post-id}` from the URL.
+**Q: How do I create a page for a specific product?**
+> 1.  Create a single, generic template, for example, `pages/en/product.twig`.
+> 2.  To show a specific product, link to it using a GET parameter, like `/en/product?id=123-xyz`.
+> 3.  Inside `product.twig`, you can get the ID from the `get_params` variable: `{{ get_params.id }}`.
 > 4.  No changes are needed in `index.php`.
 
 **Q: How do I get URL parameters (e.g., from `?key=value`)?**
@@ -649,7 +626,7 @@ pages/
 | Task                        | How/Where                                      |
 |-----------------------------|------------------------------------------------|
 | Create page                 | `pages/*.twig`, extend `default.twig`          |
-| **Create dynamic page (e.g., product)** | **Create `pages/en/product.twig`. Use `{{ id }}` inside. That's it!** |
+| **Create dynamic page (e.g., product)** | **Create `pages/en/product.twig`. Access ID via `{{ get_params.id }}`.** |
 | **Get URL GET parameters**      | **Use `{{ get_params.your_key }}` inside any Twig file.** |
 | Create template/layout      | `templates/*.twig`, use Twig blocks            |
 | Create React component      | `assets/js/components/*.jsx`, export default   |

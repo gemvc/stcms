@@ -44,77 +44,46 @@ class MultilingualRouter extends Router
     private function renderMultilingualTemplate(string $path, Request $request, Application $app): Response
     {
         $templateEngine = $app->getTemplateEngine();
-        
+
         // Extract language and subpath
         $pathParts = explode('/', trim($path, '/'));
         $language = $pathParts[0] ?? $this->defaultLanguage;
-        
-        // Validate language - use default language if invalid
+
+        // Validate language
         if (!in_array($language, $this->languages)) {
             $language = $this->defaultLanguage;
             $subpath = trim($path, '/');
         } else {
             $subpath = implode('/', array_slice($pathParts, 1));
         }
-        
-        // Prepare base template data
+
+        // Prepare base template data, always available
         $data = [
             'user' => $this->getUserData($app),
             'jwt' => $app->getJwt(),
             'path' => $path,
             'request' => $request,
             'lang' => $language,
-            'id' => null, // Initialize id
-            'get_params' => $request->getQuery(), // Add GET parameters
+            'get_params' => $request->getQuery(),
         ];
 
-        // NEW: Check for dynamic "page/id" pattern
-        $subpathParts = explode('/', $subpath);
-        if (count($subpathParts) === 2 && !empty($subpathParts[0]) && !empty($subpathParts[1])) {
-            $pageName = $subpathParts[0];
-            $id = $subpathParts[1];
-            $potentialTemplate = $language . '/' . $pageName . '.twig';
-            $data['id'] = $id;
+        // --- NEW, SIMPLIFIED ROUTING LOGIC ---
+        // The entire path now maps directly to a template file.
 
-            try {
-                // Attempt to render the dynamic page template
-                $content = $templateEngine->render($potentialTemplate, $data);
-                return new Response($content, 200, ['Content-Type' => 'text/html']);
-            } catch (\Exception $e) {
-                // Template didn't exist, so reset id and fall through to standard static page handling
-                $data['id'] = null;
-            }
-        }
-        
-        // STANDARD: Handle static pages and index
-        $templateName = '';
-        if (empty($subpath)) {
-            $templateName = $language . '/index.twig';
-        } else {
-            $templateName = $language . '/' . $subpath . '.twig';
-        }
-        
+        $templateName = $language . '/' . (empty($subpath) ? 'index' : rtrim($subpath, '/')) . '.twig';
+        $indexTemplateName = $language . '/' . (empty($subpath) ? 'index' : rtrim($subpath, '/')) . '/index.twig';
+
         try {
+            // 1. First, try to match an exact template file e.g., /sub -> sub.twig
             $content = $templateEngine->render($templateName, $data);
             return new Response($content, 200, ['Content-Type' => 'text/html']);
         } catch (\Exception $e) {
-            // Only fall back to index if the subpath is empty (i.e., root)
-            if (empty($subpath)) {
-                try {
-                    $fallbackTemplate = $language . '/index.twig';
-                    $content = $templateEngine->render($fallbackTemplate, $data);
-                    return new Response($content, 200, ['Content-Type' => 'text/html']);
-                } catch (\Exception $e2) {
-                    // Try 404 template
-                    try {
-                        $content = $templateEngine->render($language . '/404.twig', $data);
-                        return new Response($content, 404, ['Content-Type' => 'text/html']);
-                    } catch (\Exception $e3) {
-                        return new Response('Page not found', 404);
-                    }
-                }
-            } else {
-                // For missing subpages, go straight to 404
+            // 2. If exact match fails, check for an index file in a directory e.g., /sub -> /sub/index.twig
+            try {
+                $content = $templateEngine->render($indexTemplateName, $data);
+                return new Response($content, 200, ['Content-Type' => 'text/html']);
+            } catch (\Exception $e2) {
+                // 3. If both fail, render 404 page
                 try {
                     $content = $templateEngine->render($language . '/404.twig', $data);
                     return new Response($content, 404, ['Content-Type' => 'text/html']);

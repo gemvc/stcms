@@ -16,7 +16,7 @@ A Composer-installable PHP library for building modern, component-based frontend
 - 🛠️ **CLI Project Init**: Scaffold new projects with `vendor/gemvc/stcms/bin/stcms init`
 - 🎨 **Component-based UI**: React components in `/assets/js/components/`, bundled with Vite
 - 🗂️ **Multi-language Support**: Easily add new languages
-- 🗂️ **Zero-Config Dynamic Routing**: Automatic routes for pages like `/product/{id}` with full GET parameter support.
+- 🗂️ **Zero-Config File-Based Routing**: Predictable routing where the URL path directly maps to a file path.
 - 🔒 **Config via .env**: Symfony Dotenv for environment config
 - 🧩 **Extensible**: Easy for both PHP and frontend devs
 - 🛡️ **Security**: Apache security headers and file protection
@@ -67,9 +67,9 @@ project-root/
 ## Routing, Security, and Best Practices
 
 - **.htaccess** routes all requests to `index.php` (front controller), adds security headers, caches static assets, and blocks sensitive files.
-- **index.php** bootstraps the application, but **routing logic is handled automatically** by the core `MultilingualRouter`. For most cases, you don't need to edit this file to add new pages.
-- The router automatically handles static pages, dynamic pages (e.g., `page/{id}`), and GET parameters, keeping your code clean and scalable.
-- JWT/session authentication, API integration, and caching are handled server-side for security and performance.
+- **index.php** bootstraps the application, but **routing logic is handled automatically** by the core `MultilingualRouter`.
+- The router uses a simple and powerful **file-based routing** system. It maps a URL path like `/en/about/us` to a template file (`pages/en/about/us.twig`) or to a directory's index file (`pages/en/about/index.twig`).
+- Dynamic data is handled via standard GET parameters (`?id=123`), which are automatically available in your templates.
 
 ---
 

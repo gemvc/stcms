@@ -13,9 +13,11 @@ A Composer-installable PHP library for building modern, component-based frontend
 - 🚀 **Hybrid Rendering**: Twig for server-side, React for interactive components
 - 🔌 **API Integration**: Fetch data from GEMVC or any API using Guzzle
 - ⚡ **Modern Caching**: Symfony Cache (APCu/file)
-- 🛠️ **CLI Project Init**: Scaffold new projects with `vendor/gemvc/stcms/bin/stcms init`
+- 🛠️ **Two-Step Project Init**:
+  - `init` command for a minimal, single-language project.
+  - `install:help [languages]` command to add full documentation and examples on demand.
 - 🎨 **Component-based UI**: React components in `/assets/js/components/`, bundled with Vite
-- 🗂️ **Multi-language Support**: Easily add new languages
+- 🗂️ **Zero-Config Multi-language Support**: Add language folders and the system automatically detects them.
 - 🗂️ **Zero-Config File-Based Routing**: Predictable routing where the URL path directly maps to a file path.
 - 🔒 **Config via .env**: Symfony Dotenv for environment config
 - 🧩 **Extensible**: Easy for both PHP and frontend devs
@@ -92,21 +94,29 @@ project-root/
    ```bash
    composer require gemvc/stcms
    ```
-2. Initialize a new project:
+2. Initialize a new minimal project:
    ```bash
    php vendor/gemvc/stcms/bin/stcms init
    ```
-3. Install frontend dependencies and build assets:
+3. (Optional) Install documentation and example pages for specific languages:
+   ```bash
+   # Install English docs
+   php vendor/gemvc/stcms/bin/stcms install:help en
+
+   # Install German and Farsi docs
+   php vendor/gemvc/stcms/bin/stcms install:help de fa
+   ```
+4. Install frontend dependencies and build assets:
    ```bash
    npm install
    npm run build
    ```
-4. Configure environment in `.env`.
-5. Start the PHP server:
+5. Configure environment in `.env`.
+6. Start the PHP server:
    ```bash
    php -S localhost:8000
    ```
-6. **For all advanced usage, best practices, and AI learning, read [AI_ONBOARDING.md](./AI_ONBOARDING.md).**
+7. **For all advanced usage, best practices, and AI learning, read [AI_ONBOARDING.md](./AI_ONBOARDING.md).**
 
 ---
 

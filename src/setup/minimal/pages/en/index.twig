@@ -1,0 +1,43 @@
+{% extends "default.twig" %}
+
+{% block title %}Welcome to STCMS{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-md rounded-lg p-8 border border-gray-200">
+        <h1 class="text-4xl font-bold text-red-600 mb-4">Welcome to STCMS!</h1>
+        <p class="text-lg text-gray-700 mb-6">
+            Your project has been successfully initialized with a minimal setup.
+        </p>
+
+        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Install Documentation</h2>
+            <p class="text-gray-600 mb-4">
+                To install the documentation and example pages, run the following command in your terminal. You can specify one or more language codes (e.g., `en`, `de`).
+            </p>
+
+            <p class="font-semibold text-gray-700 mt-4">To install the English documentation (default):</p>
+            <div class="bg-gray-900 text-white font-mono text-sm p-3 rounded-md mt-1">
+                <code class="select-all">php vendor/gemvc/stcms/bin/stcms install:help</code>
+            </div>
+
+            <p class="font-semibold text-gray-700 mt-4">To install the German documentation:</p>
+            <div class="bg-gray-900 text-white font-mono text-sm p-3 rounded-md mt-1">
+                <code class="select-all">php vendor/gemvc/stcms/bin/stcms install:help de</code>
+            </div>
+
+            <p class="font-semibold text-gray-700 mt-4">To install both English and German:</p>
+            <div class="bg-gray-900 text-white font-mono text-sm p-3 rounded-md mt-1">
+                <code class="select-all">php vendor/gemvc/stcms/bin/stcms install:help en de</code>
+            </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">What is STCMS?</h3>
+            <p class="text-gray-700">
+                STCMS is a modern PHP library for building hybrid websites using Twig for server-side rendering and React for interactive components. It's designed to be simple, fast, and powerful.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %} 

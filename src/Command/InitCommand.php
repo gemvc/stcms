@@ -22,59 +22,86 @@ class InitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $fs = new Filesystem();
-        $setupDir = __DIR__ . '/../setup';
+        $setupDir = __DIR__ . '/../setup/minimal'; // Changed to 'minimal'
         
         // Create directories
         $dirs = [
             'templates',
-            'pages',
+            'pages/en', // Only create 'en' directory initially
             'assets/js/components',
             'assets/css',
-            'public/assets/js',
+            'public/assets/build', // Ensure build directory exists
         ];
         foreach ($dirs as $dir) {
             $fs->mkdir($dir);
         }
 
         // Copy setup files
-        $this->copySetupFiles($fs, $setupDir, $output);
+        $this->copySetupFiles($fs, $output); // Pass only needed arguments
 
-        $output->writeln('<info>STCMS project initialized!</info>');
-        $output->writeln('Next steps:');
-        $output->writeln('  1. Edit .env for your API base URL and cache settings.');
-        $output->writeln('  2. Run npm install && npx vite build to build frontend assets.');
-        $output->writeln('  3. Customize templates/example.twig and React components as needed.');
-        $output->writeln('  4. Start building your hybrid PHP/React app!');
+        $output->writeln('<info>STCMS project initialized with a minimal setup!</info>');
+        $output->writeln('Run <comment>npm install && npm run dev</comment> to start the dev server.');
+        $output->writeln('For complete documentation and examples, run:');
+        $output->writeln('<comment>php vendor/gemvc/stcms/bin/stcms install:help</comment>');
         return Command::SUCCESS;
     }
 
-        private function copySetupFiles(Filesystem $fs, string $setupDir, OutputInterface $output): void
+    private function copySetupFiles(Filesystem $fs, OutputInterface $output): void
     {
-        // Copy .env template
-        $envContent = file_get_contents($setupDir . '/env.template');
+        $minimalSetupDir = __DIR__ . '/../setup/minimal';
+        $rootSetupDir = __DIR__ . '/../setup';
+
+        // Copy .env template from the main setup folder
+        $envContent = file_get_contents($rootSetupDir . '/env.template');
         $fs->dumpFile('.env', $envContent);
 
-        // Copy vite.config.js
-        $viteContent = file_get_contents($setupDir . '/vite.config.js');
+        // Copy vite.config.js from the main setup folder
+        $viteContent = file_get_contents($rootSetupDir . '/vite.config.js');
         $fs->dumpFile('vite.config.js', $viteContent);
 
-        // Copy package.json
-        $packageContent = file_get_contents($setupDir . '/package.json');
+        // Copy package.json from the main setup folder
+        $packageContent = file_get_contents($rootSetupDir . '/package.json');
         $fs->dumpFile('package.json', $packageContent);
 
-        // Copy .gitignore
-        $gitignoreContent = file_get_contents($setupDir . '/.gitignore');
+        // Copy .gitignore from the main setup folder
+        $gitignoreContent = file_get_contents($rootSetupDir . '/.gitignore');
         $fs->dumpFile('.gitignore', $gitignoreContent);
 
-        // Copy templates
-        foreach (glob($setupDir . '/templates/*.twig') as $templateFile) {
+        // Copy templates from the main setup folder
+        foreach (glob($rootSetupDir . '/templates/*.twig') as $templateFile) {
             $basename = basename($templateFile);
             $fs->dumpFile('templates/' . $basename, file_get_contents($templateFile));
         }
 
-        // Copy pages with multi-language structure
-        $this->copyPagesWithLanguages($fs, $setupDir, $output);
+        // Copy minimal pages
+        $this->copyMinimalPages($fs, $minimalSetupDir, $output);
 
+        // Copy assets from the main setup folder
+        $this->copyAssets($fs, $rootSetupDir, $output);
+
+        // Copy index.php from the main setup folder
+        $indexContent = file_get_contents($rootSetupDir . '/index.php');
+        $fs->dumpFile('index.php', $indexContent);
+
+        // Copy .htaccess from the main setup folder
+        $htaccessContent = file_get_contents($rootSetupDir . '/.htaccess');
+        $fs->dumpFile('.htaccess', $htaccessContent);
+
+        $output->writeln('<comment>Copied minimal setup files.</comment>');
+    }
+
+    private function copyMinimalPages(Filesystem $fs, string $minimalSetupDir, OutputInterface $output): void
+    {
+        $pagesDir = $minimalSetupDir . '/pages/en';
+        foreach (glob($pagesDir . '/*.twig') as $pageFile) {
+            $basename = basename($pageFile);
+            $fs->dumpFile('pages/en/' . $basename, file_get_contents($pageFile));
+        }
+        $output->writeln('<comment>Copied minimal pages for "en" language.</comment>');
+    }
+
+    private function copyAssets(Filesystem $fs, string $setupDir, OutputInterface $output): void
+    {
         // Copy all React components from setup
         foreach (glob($setupDir . '/assets/js/components/*.jsx') as $componentFile) {
             $basename = basename($componentFile);
@@ -89,49 +116,6 @@ class InitCommand extends Command
         $registryContent = file_get_contents($setupDir . '/assets/js/registry.js');
         $fs->dumpFile('assets/js/registry.js', $registryContent);
 
-        // Copy index.php
-        $indexContent = file_get_contents($setupDir . '/index.php');
-        $fs->dumpFile('index.php', $indexContent);
-
-        // Copy .htaccess
-        $htaccessContent = file_get_contents($setupDir . '/.htaccess');
-        $fs->dumpFile('.htaccess', $htaccessContent);
-
-        // Copy Project.md from root
-        $projectContent = file_get_contents(__DIR__ . '/../../Project.md');
-        $fs->dumpFile('Project.md', $projectContent);
-
-        // Copy README.md from root
-        $readmeContent = file_get_contents(__DIR__ . '/../../README.md');
-        $fs->dumpFile('README.md', $readmeContent);
-
-        // Copy AI_ONBOARDING.md from root
-        $onboardingContent = file_get_contents(__DIR__ . '/../../AI_ONBOARDING.md');
-        $fs->dumpFile('AI_ONBOARDING.md', $onboardingContent);
-
-        $output->writeln('<comment>Copied setup files from src/setup/</comment>');
-    }
-
-    private function copyPagesWithLanguages(Filesystem $fs, string $setupDir, OutputInterface $output): void
-    {
-        $pagesDir = $setupDir . '/pages';
-        
-        // Get all language directories
-        $languageDirs = glob($pagesDir . '/*', GLOB_ONLYDIR);
-        
-        foreach ($languageDirs as $langDir) {
-            $langName = basename($langDir);
-            
-            // Create language directory in user's project
-            $fs->mkdir('pages/' . $langName);
-            
-            // Copy all .twig files from this language directory
-            foreach (glob($langDir . '/*.twig') as $pageFile) {
-                $basename = basename($pageFile);
-                $fs->dumpFile('pages/' . $langName . '/' . $basename, file_get_contents($pageFile));
-            }
-            
-            $output->writeln('<comment>Copied ' . $langName . ' pages</comment>');
-        }
+        $output->writeln('<comment>Copied assets.</comment>');
     }
 } 

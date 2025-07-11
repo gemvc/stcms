@@ -182,8 +182,11 @@ $app->run();
 ## 8. CLI Project Initialization & Setup Folder
 
 - Use `composer require gemvc/stcms` to install.
-- Run `php vendor/gemvc/stcms/bin/stcms init` to scaffold a new project (copies files from `src/setup/`).
-- The setup folder includes example templates, pages, React entry, and components for a quick start.
+- Run `php vendor/gemvc/stcms/bin/stcms init` to scaffold a new **minimal project**. This copies a basic single-language (English) setup.
+- To install the full documentation, multi-language examples, and starter pages, run `php vendor/gemvc/stcms/bin/stcms install:help [languages]`.
+  - Example: `php vendor/gemvc/stcms/bin/stcms install:help` (installs English docs)
+  - Example: `php vendor/gemvc/stcms/bin/stcms install:help en de` (installs English and German docs)
+- The setup files are sourced from `src/setup/minimal` and `src/setup/help` directories within the package.
 
 ---
 
@@ -377,18 +380,32 @@ To create a "dynamic" product page, follow these steps:
 
 This approach is extremely robust, predictable, and aligns with standard web practices. It completely removes any ambiguity about what a part of a URL represents.
 
-### Multi-language Support with Environment-Based Default Language
+### Multi-language Support with Automatic Language Detection
 
-**🚀 NEW: The MultilingualRouter now automatically reads the default language from your `.env` file!**
+**🚀 NEW: STCMS now automatically detects supported languages from your `pages` directory!**
+
+You no longer need to manually edit `index.php` to add new languages. The system is designed to be zero-configuration.
+
+#### How It Works:
+1.  **Create a language folder:** Simply add a new directory inside your `pages` folder (e.g., `pages/fa/`).
+2.  **The router automatically finds it:** On the next page load, the router will automatically recognize "fa" as a supported language.
+3.  **It just works!**
+
+This approach removes the need to maintain a manual list of languages and ensures your configuration is always in sync with your project's structure.
 
 #### Environment Configuration (.env)
+Your `.env` file still controls the *default* language.
 ```env
 API_BASE_URL=api.example.com
 CACHE_DRIVER=apcu
 DEFAULT_LANGUAGE=en
 ```
 
-#### Router Configuration (index.php)
+**Graceful Fallback:** If the `DEFAULT_LANGUAGE` set in your `.env` file does not correspond to an existing folder in `pages/`, the system will not crash. Instead, it will automatically fall back to using the **first available language** it finds, ensuring your site always remains online.
+
+#### Router Configuration (index.php) - No Action Needed!
+The setup in `index.php` is now fully automated.
+
 ```php
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
@@ -410,13 +427,24 @@ $templateEngine = new TemplateEngine([
     __DIR__ . '/templates',
 ]);
 
+// Dynamically find supported languages by scanning the 'pages' directory
+$supportedLanguages = [];
+$pagesDir = __DIR__ . '/pages';
+if (is_dir($pagesDir)) {
+    $languageDirs = glob($pagesDir . '/*', GLOB_ONLYDIR);
+    foreach ($languageDirs as $langDir) {
+        $supportedLanguages[] = basename($langDir);
+    }
+}
+
 // Configure supported languages - MultilingualRouter will use DEFAULT_LANGUAGE from .env as fallback
-$router = new MultilingualRouter(['en', 'de', 'fa']); // Add your supported languages here
+$router = new MultilingualRouter($supportedLanguages);
 
 // Create and run the application
 $app = new Application($router, $templateEngine, $apiClient);
 $app->run();
 ```
+You don't need to touch this code. Simply manage your language folders, and the system handles the rest.
 
 #### How It Works
 
@@ -596,16 +624,15 @@ pages/
 > The router automatically makes all GET parameters available in every template through the `get_params` variable. You can access them like this: `{{ get_params.key }}`.
 
 **Q: How do I add multi-language support?**
-> 1. Set `DEFAULT_LANGUAGE=en` in your `.env` file.
-> 2. Update the router array in `index.php`: `new MultilingualRouter(['en', 'de', 'fa'])`.
-> 3. Create language folders: `pages/en/`, `pages/de/`, `pages/fa/`.
-> 4. Add templates for each language (e.g., `pages/en/index.twig`, `pages/de/index.twig`).
+> 1.  First, ensure you have the desired language pages. You can add them manually or by using the `install:help` command. For example, to add German documentation, run: `php vendor/gemvc/stcms/bin/stcms install:help de`.
+> 2.  That's it! The router automatically detects the new `pages/de` directory and adds 'de' to the list of supported languages.
+> 3.  (Optional) If you want German to be the default language, change `DEFAULT_LANGUAGE=de` in your `.env` file.
 
 **Q: How does the default language work?**
-> The `MultilingualRouter` automatically reads `DEFAULT_LANGUAGE` from your `.env` file and uses it as fallback when no language is specified in the URL or when invalid languages are provided.
+> The `MultilingualRouter` reads `DEFAULT_LANGUAGE` from your `.env` file. If that language isn't available as a folder in `/pages`, it intelligently falls back to the first available language it finds, preventing errors.
 
 **Q: What happens when someone visits `/invalid/page`?**
-> The router detects that `invalid` is not in the supported languages array, so it falls back to the default language (from `.env`) and serves `en/page.twig` instead.
+> The router detects that `invalid` is not in the list of automatically detected languages, so it falls back to the default language and serves `pages/[default_lang]/page.twig` instead.
 
 ---
 
@@ -625,7 +652,7 @@ pages/
 
 | Task                        | How/Where                                      |
 |-----------------------------|------------------------------------------------|
-| Create page                 | `pages/*.twig`, extend `default.twig`          |
+| Create page                 | `pages/[lang]/*.twig`, extend `default.twig`   |
 | **Create dynamic page (e.g., product)** | **Create `pages/en/product.twig`. Access ID via `{{ get_params.id }}`.** |
 | **Get URL GET parameters**      | **Use `{{ get_params.your_key }}` inside any Twig file.** |
 | Create template/layout      | `templates/*.twig`, use Twig blocks            |
@@ -635,9 +662,7 @@ pages/
 | Pass data to React          | `data-*` attributes in HTML, parse in registry |
 | Build assets                | `npm run build`                                |
 | Serve app                   | `php -S localhost:8000`                        |
-| Add API integration         | `src/Core/ApiClient.php`                       |
-| Add caching                 | Symfony Cache in PHP                           |
-| Add multi-language          | Update router array in `index.php` + add `pages/[lang]/` |
+| **Add new language support**  | **Create a folder `pages/[lang]/` or run `install:help [lang]`. It's detected automatically.** |
 | Configure default language  | Set `DEFAULT_LANGUAGE=en` in `.env` file       |
 
 ---

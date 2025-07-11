@@ -132,5 +132,5 @@ project-root/
 
 ---
 
-**STCMS** - Making hybrid Multilanguage PHP/React development simple, powerful, and AI-ready! 🚀
+**STCMS** – The expert's choice for hybrid frontends. Build powerful, multilanguage applications with PHP and React in a simple, AI-ready library. 🚀
 

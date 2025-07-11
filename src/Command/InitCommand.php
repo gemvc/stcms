@@ -126,7 +126,7 @@ class InitCommand extends Command
     private function copyComponents(Filesystem $fs, string $setupDir, OutputInterface $output): void
     {
         // Copy all component files from setup
-        foreach (glob($setupDir . '/components.twig') as $componentFile) {
+        foreach (glob($setupDir . '/components/components.twig') as $componentFile) {
             $basename = basename($componentFile);
             $fs->dumpFile('components/' . $basename, file_get_contents($componentFile));
         }

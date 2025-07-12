@@ -1,0 +1,11 @@
+# Forbid access to sensitive files in the root directory
+<FilesMatch "^(\.env|\.gitignore|composer\.json|composer\.lock|package\.json|vite\.config\.js)$">
+    Require all denied
+</FilesMatch>
+
+# Explicitly block access to all non-public directories
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(assets|components|pages|src|templates|vendor)($|/) - [F,L]
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

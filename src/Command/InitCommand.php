@@ -87,11 +87,11 @@ class InitCommand extends Command
             $fs->copy($packageReadme, $root . '/README.md', true);
         }
         
-        // Use the new, corrected vite.config.js
-        $this->createViteConfig($fs, $root); 
+        // Copy vite.config.js from setup
+        $fs->copy($setupDir . '/vite.config.js', $root . '/vite.config.js'); 
         
         // Copy PHP entry point to public directory
-        $this->createPublicIndex($fs, $root, $setupDir);
+        $fs->copy($setupDir . '/index.php', $root . '/public/index.php');
 
         // Copy Twig components, templates, and pages
         $fs->mirror($setupDir . '/components', $root . '/components');
@@ -103,123 +103,14 @@ class InitCommand extends Command
 
         $output->writeln('Copied boilerplate files.');
     }
-    
-    private function createViteConfig(Filesystem $fs, string $root): void
-    {
-        $content = <<<EOT
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [react()],
-  publicDir: false,
-  build: {
-    outDir: 'public/assets/build',
-    emptyOutDir: true,
-    manifest: true,
-    rollupOptions: {
-      input: {
-        app: 'assets/js/app.jsx',
-      },
-      output: {
-        entryFileNames: 'js/[name].js',
-        chunkFileNames: 'js/[name].js',
-        assetFileNames: 'css/[name].[ext]',
-      },
-    },
-  },
-});
-EOT;
-        $fs->dumpFile($root . '/vite.config.js', $content);
-    }
-
-    private function createPublicIndex(Filesystem $fs, string $root, string $setupDir): void
-    {
-        $content = <<<'EOT'
-<?php
-// We are in public/, so we need to go one level up to reach the project root.
-require_once __DIR__ . '/../vendor/autoload.php';
-
-use Gemvc\Stcms\Core\Application;
-use Gemvc\Stcms\Core\TemplateEngine;
-use Gemvc\Stcms\Core\ApiClient;
-use Symfony\Component\Dotenv\Dotenv;
-use Gemvc\Stcms\Core\MultilingualRouter;
-
-$projectRoot = dirname(__DIR__);
-$dotenv = new Dotenv();
-$dotenv->loadEnv($projectRoot . '/.env');
-
-// Set default environment variables
-$_ENV['APP_ENV'] = $_ENV['APP_ENV'] ?? 'production';
-$_ENV['API_BASE_URL'] = $_ENV['API_BASE_URL'] ?? 'http://localhost:80';
-$_ENV['DEFAULT_LANGUAGE'] = $_ENV['DEFAULT_LANGUAGE'] ?? 'en';
-$_ENV['VITE_BASE_URL'] = $_ENV['VITE_BASE_URL'] ?? 'http://localhost:5173';
-
-$apiClient = new ApiClient($_ENV['API_BASE_URL']);
-$templateEngine = new TemplateEngine(
-    [
-        $projectRoot . '/pages',
-        $projectRoot . '/templates',
-        $projectRoot . '/components',
-    ],
-    $projectRoot,
-    $_ENV['APP_ENV'],
-    $_ENV['VITE_BASE_URL']
-);
-
-$supportedLanguages = array_map('basename', glob($projectRoot . '/pages/*', GLOB_ONLYDIR));
-if (empty($supportedLanguages)) {
-    $supportedLanguages = ['en'];
-}
-if (!in_array($_ENV['DEFAULT_LANGUAGE'], $supportedLanguages)) {
-    $_ENV['DEFAULT_LANGUAGE'] = $supportedLanguages[0];
-}
-
-$router = new MultilingualRouter($supportedLanguages);
-$app = new Application($router, $templateEngine, $apiClient);
-$app->run();
-EOT;
-        $fs->dumpFile($root . '/public/index.php', $content);
-    }
 
     private function createHtaccessFiles(Filesystem $fs, string $root, OutputInterface $output): void
     {
-        // Root .htaccess
-        $rootHtaccess = <<<EOT
-# Forbid access to sensitive files in the root directory
-<FilesMatch "^(\.env|\.gitignore|composer\.json|composer\.lock|package\.json|vite\.config\.js)$">
-    Require all denied
-</FilesMatch>
+        // Copy root .htaccess from setup file
+        $fs->copy(realpath(__DIR__ . '/../setup/htaccess_root'), $root . '/.htaccess');
 
-# Explicitly block access to all non-public directories
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteRule ^(assets|components|pages|src|templates|vendor)($|/) - [F,L]
-    RewriteRule ^(.*)$ public/\$1 [L]
-</IfModule>
-EOT;
-        $fs->dumpFile($root . '/.htaccess', $rootHtaccess);
-
-        // Public .htaccess
-        $publicHtaccess = <<<EOT
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php?path=\$1 [QSA,L]
-</IfModule>
-
-<IfModule mod_headers.c>
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set X-Frame-Options "DENY"
-    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
-        Header set Cache-Control "public, immutable, max-age=31536000"
-    </FilesMatch>
-</IfModule>
-EOT;
-        $fs->dumpFile($root . '/public/.htaccess', $publicHtaccess);
+        // Copy public .htaccess from setup file
+        $fs->copy(realpath(__DIR__ . '/../setup/htaccess_public'), $root . '/public/.htaccess');
         
         $output->writeln('Created .htaccess files for secure routing.');
     }

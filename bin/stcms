@@ -24,10 +24,13 @@ require $autoload_file;
 use Symfony\Component\Console\Application;
 use Gemvc\Stcms\Command\InitCommand;
 use Gemvc\Stcms\Command\InstallHelpCommand;
+use Gemvc\Stcms\Command\CacheClearCommand;
 
-$application = new Application();
+$application = new Application('STCMS', '1.0.0');
 
+// Register your commands
 $application->add(new InitCommand());
 $application->add(new InstallHelpCommand());
+$application->add(new CacheClearCommand());
 
 $application->run(); 

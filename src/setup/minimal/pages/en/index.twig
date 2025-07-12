@@ -1,39 +1,27 @@
-<!DOCTYPE html>
-<html lang="{{ lang ?? 'en' }}">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>
-            {% block title %}STCMS
-            {% endblock %}
-        </title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-jsx.min.js"></script>
+{% extends "default.twig" %}
+{% import "components.twig" as components %}
 
-    </head>
-    <body class="bg-gray-50">
-        <!-- Include Navbar Component -->
-        {% include 'navbar.twig' %}
+{% block title %}Welcome to STCMS{% endblock %}
 
-        <!-- Main Content -->
-        <main class="max-w-7xl mx-auto py-6 px-4">
-            {% block content %}{% endblock %}
-        </main>
+{% block content %}
+    <div class="bg-white shadow-md rounded-lg p-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome to STCMS!</h1>
+        <p class="text-gray-600 mb-6">
+            This is the homepage of your new STCMS-powered website. You can start editing this content in <code>pages/en/index.twig</code>.
+        </p>
+        <div class="flex gap-4">
+             {{ components.button(text='How It Works', url='/' ~ lang ~ '/how', variant='primary') }}
+             {{ components.button(text='See Examples', url='/' ~ lang ~ '/examples', variant='secondary') }}
+        </div>
 
-        <!-- Footer -->
-        <footer class="bg-gray-800 text-white mt-12">
-            <div class="max-w-7xl mx-auto py-6 px-4">
-                <div class="text-center">
-                    <p>&copy; 2025 STCMS made with love by Ali Khorsandfard</p>
-                </div>
-            </div>
-        </footer>
+        <hr class="my-8">
 
-        <!-- Scripts Block for React Components -->
-        {{ vite_assets()|raw }}
-        <!-- Alpine.js for dropdown functionality -->
-        <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    </body>
-</html>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Interactive React Component</h2>
+        <p class="text-gray-600 mb-4">
+            Below is an interactive component rendered by React. The code for this is in <code>assets/js/components/Hello.jsx</code>.
+        </p>
+        
+        <!-- React Component Mount Point -->
+        <div id="hello-root" class="mt-4 p-4 border rounded-lg bg-gray-50"></div>
+    </div>
+{% endblock %}

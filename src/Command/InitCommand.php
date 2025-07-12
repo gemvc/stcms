@@ -11,11 +11,18 @@ class InitCommand extends Command
     protected static $defaultName = 'init';
     protected static $defaultDescription = 'Initializes a new STCMS project with a secure, public-directory structure.';
 
+    protected function configure(): void
+    {
+        $this
+            ->setName('init')
+            ->setDescription('Initializes a new STCMS project...');
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $fs = new Filesystem();
         $projectRoot = getcwd();
-        $setupDir = realpath(__DIR__ . '/../../setup');
+        $setupDir = realpath(__DIR__ . '/../setup');
 
         if (!$setupDir) {
             $output->writeln('<error>Setup directory could not be found. Check package installation.</error>');

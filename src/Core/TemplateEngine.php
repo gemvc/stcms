@@ -1,29 +1,38 @@
 <?php
+
 namespace Gemvc\Stcms\Core;
 
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\Extension\DebugExtension;
+use Twig\TwigFunction;
 
 class TemplateEngine
 {
     private Environment $twig;
     private ?array $manifest = null;
-    private bool $isDev = false;
-    private string $viteBase;
+    private bool $isDev;
+    private string $viteBaseUrl;
+    private string $entrypoint;
 
-    /**
-     * @param string|array $templatePaths One or more paths (e.g. [pages, templates])
-     * @param string $projectRoot The absolute path to the project root.
-     * @param string $appEnv The application environment ('development' or 'production').
-     * @param string $viteBaseUrl The base URL for the Vite dev server.
-     */
-    public function __construct($templatePaths, string $projectRoot, string $appEnv = 'production', string $viteBaseUrl = 'http://localhost:5173')
-    {
+    public function __construct(
+        array $templatePaths,
+        string $projectRoot,
+        string $appEnv = 'production',
+        string $viteBaseUrl = 'http://localhost:5173',
+        string $entrypoint = 'assets/js/app.jsx'
+    ) {
         $this->isDev = ($appEnv === 'development');
-        $this->viteBase = $viteBaseUrl;
+        $this->viteBaseUrl = rtrim($viteBaseUrl, '/');
+        $this->entrypoint = $entrypoint;
 
-        // In production, load the Vite manifest file to get asset paths.
+        $loader = new FilesystemLoader($templatePaths);
+        $this->twig = new Environment($loader, [
+            'debug' => $this->isDev,
+            'auto_reload' => $this->isDev,
+            'cache' => $this->isDev ? false : rtrim(sys_get_temp_dir(), '/') . '/stcms_cache',
+        ]);
+
         if (!$this->isDev) {
             $manifestPath = $projectRoot . '/public/assets/build/manifest.json';
             if (file_exists($manifestPath)) {
@@ -31,84 +40,62 @@ class TemplateEngine
             }
         }
 
-        $paths = is_array($templatePaths) ? $templatePaths : [$templatePaths];
-        $loader = new FilesystemLoader($paths);
-        $this->twig = new Environment($loader, [
-            'cache' => $this->isDev ? false : rtrim(sys_get_temp_dir(), '/') . '/stcms_cache',
-            'debug' => $this->isDev,
-            'auto_reload' => $this->isDev,
-        ]);
-
-        // Add debug extension
-        $this->twig->addExtension(new DebugExtension());
-
-        // Add custom functions
         $this->addCustomFunctions();
     }
 
     public function render(string $template, array $data = []): string
     {
-        try {
-            return $this->twig->render($template, $data);
-        } catch (\Twig\Error\LoaderError $e) {
-            throw new \Exception("Template not found: $template");
-        } catch (\Twig\Error\RuntimeError $e) {
-            throw new \Exception("Template error: " . $e->getMessage());
-        } catch (\Twig\Error\SyntaxError $e) {
-            throw new \Exception("Template syntax error: " . $e->getMessage());
-        }
+        // Add global variables available in all templates
+        $this->twig->addGlobal('app_env', $this->isDev ? 'development' : 'production');
+        
+        return $this->twig->render($template, $data);
     }
 
     private function addCustomFunctions(): void
     {
-        // Add asset function for loading Vite-managed static files
-        $this->twig->addFunction(new \Twig\TwigFunction('asset', function (string $path) {
+        $this->twig->addExtension(new DebugExtension());
+
+        // This function injects the correct script and link tags for Vite.
+        $this->twig->addFunction(new TwigFunction('vite_assets', function (): string {
             if ($this->isDev) {
-                // In development, assets are served by the Vite dev server.
-                return $this->viteBase . '/' . ltrim($path, '/');
+                // In development, point to the Vite dev server.
+                return <<<HTML
+                    <script type="module" src="{$this->viteBaseUrl}/@vite/client"></script>
+                    <script type="module" src="{$this->viteBaseUrl}/{$this->entrypoint}"></script>
+                HTML;
             }
 
-            // In production, use the manifest file to get the final asset path.
-            $manifestKey = ltrim($path, '/');
-            if (isset($this->manifest[$manifestKey]['file'])) {
-                return '/assets/build/' . $this->manifest[$manifestKey]['file'];
+            // In production, use the manifest.json to get hashed filenames.
+            if (!$this->manifest) {
+                // Optionally return an error or a placeholder
+                return '<!-- Vite manifest not found -->';
             }
 
-            // Trigger a warning if an asset is not found in the manifest.
-            trigger_error("Asset not found in manifest.json: {$path}", E_USER_WARNING);
-            return '';
-        }));
-
-        // Add a function to include Vite's client and React Refresh preamble in development.
-        $this->twig->addFunction(new \Twig\TwigFunction('vite_react_refresh', function () {
-            if (!$this->isDev) {
-                return '';
+            $entryData = $this->manifest[$this->entrypoint] ?? null;
+            if (!$entryData) {
+                 return '<!-- Vite entrypoint not found in manifest -->';
             }
-            return <<<HTML
-                <script type="module" src="{$this->viteBase}/@vite/client"></script>
-            HTML;
+
+            $html = '';
+            // Add the main JS file
+            $html .= '<script type="module" src="/assets/build/' . $entryData['file'] . '"></script>';
+            
+            // Add any associated CSS files
+            if (!empty($entryData['css'])) {
+                foreach ($entryData['css'] as $cssFile) {
+                    $html .= '<link rel="stylesheet" href="/assets/build/' . $cssFile . '">';
+                }
+            }
+            
+            return $html;
         }, ['is_safe' => ['html']]));
 
-
-        // Add route function for generating URLs
-        $this->twig->addFunction(new \Twig\TwigFunction('route', function (string $name, array $params = []) {
-            // Simple route generation - can be enhanced later
-            return '/' . $name;
-        }));
-
-        // Add json_encode function
-        $this->twig->addFunction(new \Twig\TwigFunction('json_encode', function ($data) {
-            return json_encode($data);
-        }));
-
-        // Add is_authenticated function
-        $this->twig->addFunction(new \Twig\TwigFunction('is_authenticated', function () {
-            return isset($_SESSION['jwt']);
-        }));
-    }
-
-    public function getTwig(): Environment
-    {
-        return $this->twig;
+        // Deprecated, but kept for potential legacy use. `vite_assets` is preferred.
+        $this->twig->addFunction(new TwigFunction('vite_react_refresh', function (): string {
+            if ($this->isDev) {
+                 return '<script type="module" src="' . $this->viteBaseUrl . '/@vite/client"></script>';
+            }
+            return '';
+        }, ['is_safe' => ['html']]));
     }
 } 

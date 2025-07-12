@@ -1,7 +1,25 @@
 #!/usr/bin/env php
 <?php
 
-require __DIR__.'/../../vendor/autoload.php';
+// Function to find the vendor/autoload.php file
+function find_autoload($dir) {
+    if (file_exists($dir . '/vendor/autoload.php')) {
+        return $dir . '/vendor/autoload.php';
+    }
+    if ($dir === dirname($dir)) { // Reached the root directory
+        return false;
+    }
+    return find_autoload(dirname($dir));
+}
+
+$autoload_file = find_autoload(__DIR__);
+
+if (!$autoload_file) {
+    echo 'Failed to find autoload.php. Make sure you have run "composer install".' . PHP_EOL;
+    exit(1);
+}
+
+require $autoload_file;
 
 use Symfony\Component\Console\Application;
 use Gemvc\Stcms\Command\InitCommand;

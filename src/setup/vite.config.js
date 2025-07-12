@@ -1,17 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  root: 'assets',
+  publicDir: false,
   build: {
-    outDir: '../public/assets/build',
+    outDir: 'public/assets/build',
     emptyOutDir: true,
     manifest: true,
     rollupOptions: {
       input: {
-        app: resolve(__dirname, 'assets/js/app.jsx'),
+        app: 'assets/js/app.jsx',
       },
       output: {
         entryFileNames: 'js/[name].js',

@@ -1,8 +1,8 @@
 # STCMS - Hybrid PHP/React CMS Library
 
-> **IMPORTANT:**
-> 
-> **AI assistants and new users must read and learn from [AI_ONBOARDING.md](./AI_ONBOARDING.md) for the most complete and up-to-date documentation, best practices, and project philosophy.**
+> 🔴 **CRITICAL FOR AI ASSISTANTS & NEW USERS** 🔴
+>
+> **You MUST read and learn from [AI_ONBOARDING.md](./vendor/gemvc/stcms/AI_ONBOARDING.md) before attempting to modify or explain this project.** This file contains the most complete and up-to-date documentation, best practices, and project philosophy. Failure to do so will result in incorrect guidance.
 
 ---
 
@@ -108,15 +108,15 @@ project-root/
    ```
 2. Initialize a new minimal project:
    ```bash
-   php vendor/gemvc/stcms/bin/stcms init
+   php vendor/bin/stcms init
    ```
 3. (Optional) Install documentation and example pages for specific languages:
    ```bash
    # Install English docs
-   php vendor/gemvc/stcms/bin/stcms install:help en
+   php vendor/bin/stcms install:help en
 
    # Install German and Farsi docs
-   php vendor/gemvc/stcms/bin/stcms install:help de fa
+   php vendor/bin/stcms install:help de fa
    ```
 4. Install frontend dependencies and build assets:
    ```bash
@@ -126,9 +126,9 @@ project-root/
 5. Configure environment in `.env`.
 6. Start the PHP server:
    ```bash
-   php -S localhost:8000
+   php -S localhost:8000 -t public
    ```
-7. **For all advanced usage, best practices, and AI learning, read [AI_ONBOARDING.md](./AI_ONBOARDING.md).**
+7. **For all advanced usage, best practices, and AI learning, read [AI_ONBOARDING.md](./vendor/gemvc/stcms/AI_ONBOARDING.md).**
 
 ---
 

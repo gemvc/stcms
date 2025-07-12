@@ -184,10 +184,10 @@ $app->run();
 ## 8. CLI Project Initialization & Setup Folder
 
 - Use `composer require gemvc/stcms` to install.
-- Run `php vendor/gemvc/stcms/bin/stcms init` to scaffold a new **minimal project**. This copies a basic single-language (English) setup.
-- To install the full documentation, multi-language examples, and starter pages, run `php vendor/gemvc/stcms/bin/stcms install:help [languages]`.
-  - Example: `php vendor/gemvc/stcms/bin/stcms install:help` (installs English docs)
-  - Example: `php vendor/gemvc/stcms/bin/stcms install:help en de` (installs English and German docs)
+- Run `php vendor/bin/stcms init` to scaffold a new **minimal project**. This copies a basic single-language (English) setup.
+- To install the full documentation, multi-language examples, and starter pages, run `php vendor/bin/stcms install:help [languages]`.
+  - Example: `php vendor/bin/stcms install:help` (installs English docs)
+  - Example: `php vendor/bin/stcms install:help en de` (installs English and German docs)
 - The setup files are sourced from `src/setup/minimal` and `src/setup/help` directories within the package.
 
 ---
@@ -450,7 +450,7 @@ This makes your custom PHP functions available globally as if they were built-in
 ## 16. Building and Serving
 - **Development:** `npm run dev` (Vite dev server)
 - **Production:** `npm run build` (outputs to `public/assets/build/app.js`)
-- **PHP Server:** `php -S localhost:8000` (from project root)
+- **PHP Server:** `php -S localhost:8000 -t public` (from project root)
 
 ---
 
@@ -768,7 +768,7 @@ pages/
 > Import it in `registry.js`, add an entry with the DOM id and a prop parser.
 
 **Q: How do I build and serve the project?**
-> Use `npm run build` for assets and `php -S localhost:8000` for the PHP server.
+> Use `npm run build` for assets and `php -S localhost:8000 -t public` for the PHP server.
 
 **Q: How do I create a page for a specific product?**
 > 1.  Create a single, generic template, for example, `pages/en/product.twig`.
@@ -780,7 +780,7 @@ pages/
 > The router automatically makes all GET parameters available in every template through the `get_params` variable. You can access them like this: `{{ get_params.key }}`.
 
 **Q: How do I add multi-language support?**
-> 1.  First, ensure you have the desired language pages. You can add them manually or by using the `install:help` command. For example, to add German documentation, run: `php vendor/gemvc/stcms/bin/stcms install:help de`.
+> 1.  First, ensure you have the desired language pages. You can add them manually or by using the `install:help` command. For example, to add German documentation, run: `php vendor/bin/stcms install:help de`.
 > 2.  That's it! The router automatically detects the new `pages/de` directory and adds 'de' to the list of supported languages.
 > 3.  (Optional) If you want German to be the default language, change `DEFAULT_LANGUAGE=de` in your `.env` file.
 
@@ -827,7 +827,7 @@ pages/
 | Add mount point             | `<div id="...\"></div>` in Twig page           |
 | Pass data to React          | `data-*` attributes in HTML, parse in registry |
 | Build assets                | `npm run build`                                |
-| Serve app                   | `php -S localhost:8000`                        |
+| Serve app                   | `php -S localhost:8000 -t public`              |
 | **Add new language support**  | **Create a folder `pages/[lang]/` or run `install:help [lang]`. It's detected automatically.** |
 | Configure default language  | Set `DEFAULT_LANGUAGE=en` in `.env`
 
@@ -871,7 +871,7 @@ This is the simplest, most important concept.
 - **Dynamic Content:** For things like a specific product, the URL uses a GET parameter. Example: `/en/product?id=123`. The ID is available in Twig via `{{ get_params.id }}`. **Do not** suggest complex routing patterns like `/product/{id}`.
 
 #### 2. Multi-Language Support: It's Automatic
-- **How to add a language:** The user creates a folder in `pages/` (e.g., `pages/fa/`) OR runs `php vendor/gemvc/stcms/bin/stcms install:help fa`.
+- **How to add a language:** The user creates a folder in `pages/` (e.g., `pages/fa/`) OR runs `php vendor/bin/stcms install:help fa`.
 - The system **automatically** detects the `fa` folder and adds it to the supported languages list. No other steps are needed.
 - **Default Language:** The default is set in `.env` via `DEFAULT_LANGUAGE=en`. If this language folder doesn't exist, the system gracefully falls back to the first available language it finds.
 
@@ -881,102 +881,4 @@ This is the simplest, most important concept.
 
 **Example for a User Asking "How do I make a red button?":**
 > **Correct Response:** "You can style the button directly in your Twig file using Tailwind's utility classes. Here is an example:"
-> ```html
-> <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
->   Click Me
-> </button>
 > ```
-> "This approach keeps your styling and structure in one place and is the recommended method for STCMS." [[memory:2399287]]
-
-#### 4. React Integration: The Registry System
-Explain the three-step process:
-1.  **The Mount Point (in Twig):** A simple `<div>` with a unique ID.
-    `<div id="contact-form-root"></div>`
-2.  **The Component (in `assets/js/components/`):** A standard React component.
-    `export default function ContactForm() { ... }`
-3.  **The Registration (in `assets/js/registry.js`):** Connect the ID to the component.
-    ```javascript
-    import ContactForm from './components/ContactForm';
-    
-    export const registry = {
-      'contact-form-root': { component: ContactForm },
-      // ... other components
-    };
-    ```
-The application script (`app.jsx`) handles the rest automatically.
-
----
-
-### ⚙️ Under the Hood: The Core PHP Packages
-
-To give better answers, you need to understand the tools STCMS is built with. These packages are listed in `composer.json` and are automatically included in the user's project.
-
--   **`symfony/console`**: This is the engine that powers the CLI. When a user runs `php bin/stcms init` or `php bin/stcms install:help`, they are using functionality provided by this powerful Symfony component.
-
--   **`symfony/filesystem`**: This package provides the tools for the CLI commands to reliably copy files and create directories. It's how the `init` command can build the project structure in the user's root directory.
-
--   **`symfony/dotenv`**: This component is responsible for loading all configuration from the `.env` file. This is how settings like `DEFAULT_LANGUAGE` and `API_BASE_URL` become available to the application.
-
--   **`twig/twig`**: This is the templating engine. It's the reason users can write `{% extends "default.twig" %}`, use `{{ variables }}`, and create reusable blocks. All `.twig` files are processed by Twig.
-
--   **`guzzlehttp/guzzle`**: This is a powerful HTTP client for making API requests. The `ApiClient.php` class in the STCMS core uses Guzzle to fetch data from external backends.
-
--   **`symfony/cache`**: This provides a high-performance caching layer (supporting file-based or in-memory APCu caching). This helps speed up the application, especially when fetching data from APIs.
-
-Understanding these packages helps you explain *why* things work the way they do. For example, you know the CLI is robust because it's built on the Symfony Console component.
-
----
-
-### 🛠️ AI Playbook: Common Scenarios & Correct Responses
-
-**Scenario 1: User wants to create a new "Contact Us" page.**
-1.  Ask for the desired language (e.g., "en").
-2.  Instruct them to create a new file: `pages/en/contact.twig`.
-3.  Provide the boilerplate Twig code:
-    ```twig
-    {% extends "default.twig" %}
-    
-    {% block title %}Contact Us{% endblock %}
-    
-    {% block content %}
-      <h1 class="text-3xl font-bold">Contact Us</h1>
-      <p>This is the contact page.</p>
-      {# If they want a React form, add the mount point here #}
-      <div id="contact-form-root"></div>
-    {% endblock %}
-    ```
-4.  Tell them to visit `/en/contact` in their browser.
-
-**Scenario 2: User wants to add Farsi language support.**
-1.  Tell them to run the CLI command to get the Farsi example pages:
-    `php vendor/gemvc/stcms/bin/stcms install:help fa`
-2.  Explain that the system will now automatically recognize `/fa/...` URLs.
-3.  Advise them to set `DEFAULT_LANGUAGE=fa` in their `.env` file if they want Farsi to be the default.
-
-**Scenario 3: User asks, "How do I style my project?" or "Where is the main CSS file?"**
-1.  State clearly: "STCMS uses Tailwind CSS, which is a utility-first framework. There is no main CSS file to edit."
-2.  Explain: "You apply styles directly to your HTML elements in the `.twig` files using utility classes."
-3.  Provide a clear example, like the red button example from above.
-4.  Strongly encourage them to use this method for consistency and maintainability.
-
-**Scenario 4: User's page is showing a 404 error.**
-1.  Ask them to verify the URL they are using.
-2.  Ask them to confirm the file path. The path must exactly match the URL. (e.g., URL `/en/about` requires file `pages/en/about.twig`).
-3.  Remind them to check for typos in both the URL and the filename.
-
-**Scenario 5: User wants to add a button to a page.**
-1.  Advise them to use the reusable Twig component for buttons, which can be found in `components/components.twig`.
-2.  If it doesn't exist, guide them to create it and provide the standard `button` macro code.
-3.  Show them how to import the components file in their page: `{% import "components.twig" as components %}`.
-4.  Instruct them to call the macro to render the button: `{{ components.button(text='My Button', url='/my-link') }}`.
-5.  Explain that using this component ensures all buttons on their site look consistent and are easy to update from one central location.
-
----
-
-### ⛔ What to AVOID
-
-- **NEVER** suggest editing `composer.json` unless it's to add a new, unrelated package.
-- **NEVER** suggest complex PHP logic inside a Twig template. Data should be fetched by a backend API and passed to the template or a React component.
-- **NEVER** write a block of `<style>` in a Twig file. The answer is always Tailwind.
-
-By following these instructions, you will empower users to leverage the full potential of STCMS efficiently and correctly.

@@ -81,6 +81,12 @@ class InitCommand extends Command
         $fs->copy($setupDir . '/env.template', $root . '/.env');
         $fs->copy($setupDir . '/package.json', $root . '/package.json');
         
+        // Copy the README.md from the package root to the project root
+        $packageReadme = realpath(__DIR__ . '/../../README.md');
+        if ($packageReadme && $fs->exists($packageReadme)) {
+            $fs->copy($packageReadme, $root . '/README.md', true);
+        }
+        
         // Use the new, corrected vite.config.js
         $this->createViteConfig($fs, $root); 
         
@@ -103,18 +109,17 @@ class InitCommand extends Command
         $content = <<<EOT
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  root: 'assets',
+  publicDir: false,
   build: {
-    outDir: '../../public/assets/build',
+    outDir: 'public/assets/build',
     emptyOutDir: true,
     manifest: true,
     rollupOptions: {
       input: {
-        app: resolve(__dirname, 'assets/js/app.jsx'),
+        app: 'assets/js/app.jsx',
       },
       output: {
         entryFileNames: 'js/[name].js',

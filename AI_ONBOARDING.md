@@ -61,55 +61,59 @@ project-root/
 
 ---
 
-## 4. Entry Point and Web Server Configuration: index.php & .htaccess
+## 4. Entry Point and Web Server Configuration: .htaccess & index.php
 
-### .htaccess
-- Ensures all requests (except for real files/folders) are routed to `index.php` (front controller pattern).
-- Enables clean URLs and centralized routing in your PHP app.
-- Adds security headers to protect against common web vulnerabilities.
-- Caches static assets (CSS, JS, images, fonts) for performance.
-- Prevents web access to sensitive files (e.g., .env, composer.json).
+STCMS uses a "public directory" structure, which is a modern security best practice. All application logic, templates, and source files reside outside the web-accessible `public/` folder, and only `public/index.php` is exposed to the web. This is managed by two `.htaccess` files.
 
-**Example:**
+### .htaccess in the Project Root
+This file has two critical jobs:
+1.  **Security:** It blocks all direct web access to sensitive files (like `.env`) and crucial application directories (like `src`, `vendor`, `templates`, etc.). This prevents anyone from accessing your source code or configuration from a browser.
+2.  **Routing:** It forwards every incoming request to the `public/` directory, where the application's front-controller (`index.php`) resides.
+
+**Example: `/.htaccess`**
 ```apache
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [QSA,L]
-# ... (security headers, cache, file protection)
+# --- 1. Security: Block all files and directories starting with a dot ---
+# This is a strong general rule that protects .git, .env, etc.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule "(^|/)\." - [F]
+</IfModule>
+
+# --- 2. Security: Explicitly forbid access to sensitive directories ---
+# Any direct web request to these folders will be blocked.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(src|vendor|templates|pages|components|assets)/?$ - [F,NC,L]
+</IfModule>
+
+# --- 3. Routing: Pass all other requests to the public folder ---
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+```
+
+### .htaccess in the `public/` Directory
+This file acts as the application's front-controller. It receives all requests forwarded from the root `.htaccess` and routes them to `index.php` if they don't correspond to a real, physical file (like a CSS file or an image). This is what enables the clean, file-based routing system.
+
+**Example: `/public/.htaccess`**
+```apache
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Send requests to front controller if they don't point to a real file or directory
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
 ```
 
 ### index.php
-- Main entry point for all requests routed by `.htaccess`.
-- Loads Composer autoloading and environment variables.
-- Initializes STCMS core classes (Application, Router, TemplateEngine, ApiClient, etc.).
-- Bootstraps the application and handles all routing and rendering.
-
-**Example:**
-```php
-<?php
-require_once __DIR__ . '/vendor/autoload.php';
-use Gemvc\Stcms\Core\Application;
-use Gemvc\Stcms\Core\Router;
-use Gemvc\Stcms\Core\TemplateEngine;
-use Gemvc\Stcms\Core\ApiClient;
-use Symfony\Component\Dotenv\Dotenv;
-$dotenv = new Dotenv();
-$dotenv->loadEnv(__DIR__ . '/.env');
-$apiClient = new ApiClient($_ENV['API_BASE_URL']);
-$templateEngine = new TemplateEngine([
-    __DIR__ . '/pages',
-    __DIR__ . '/templates',
-]);
-$router = new Router();
-$app = new Application($router, $templateEngine, $apiClient);
-$app->run();
-```
+The `public/index.php` file bootstraps the entire application. It loads Composer's autoloader, environment variables from `.env`, and initializes all the core STCMS components like the Router, Template Engine, and ApiClient before running the application.
 
 **Best Practices:**
-- Use `.htaccess` for routing, security, and caching.
-- Keep all application bootstrapping and routing logic in `index.php`.
-- This setup is a best practice for modern PHP apps, ensuring security, flexibility, and a clean separation of concerns.
+- This setup provides a robust, secure, and flexible foundation for any modern PHP application.
+- You **do not** need to edit these files manually. The `stcms init` command creates them for you with the correct, optimized configuration.
 
 ---
 
@@ -181,14 +185,39 @@ $app->run();
 
 ---
 
-## 8. CLI Project Initialization & Setup Folder
+## 8. CLI Commands
 
-- Use `composer require gemvc/stcms` to install.
-- Run `php vendor/bin/stcms init` to scaffold a new **minimal project**. This copies a basic single-language (English) setup.
-- To install the full documentation, multi-language examples, and starter pages, run `php vendor/bin/stcms install:help [languages]`.
-  - Example: `php vendor/bin/stcms install:help` (installs English docs)
-  - Example: `php vendor/bin/stcms install:help en de` (installs English and German docs)
-- The setup files are sourced from `src/setup/minimal` and `src/setup/help` directories within the package.
+STCMS comes with a powerful command-line interface (CLI) to help you manage and scaffold your project. You can run these commands from the root of your project.
+
+### `init`
+This is the first command you should run. It sets up the entire project structure, including directories, `.env` file, `.htaccess` files, and starter templates.
+```bash
+php vendor/bin/stcms init
+```
+
+### `install:help`
+This command installs the full documentation and multi-language example pages, which are not included in the minimal `init` setup.
+```bash
+# Install English docs
+php vendor/bin/stcms install:help en
+
+# Install German and Farsi docs
+php vendor/bin/stcms install:help de fa
+```
+
+### `cache:clear`
+In a production environment (`APP_ENV=production`), Twig templates are compiled and cached for performance. If you make changes to a `.twig` file, you must clear the cache to see your changes. This command safely deletes the template cache.
+```bash
+php vendor/bin/stcms cache:clear
+```
+
+### `deploy:init`
+This command helps you set up a deployment workflow. It creates a template file for a CI/CD service like GitHub Actions.
+```bash
+# Initialize a deployment workflow for GitHub Actions and FTP
+php vendor/bin/stcms deploy:init github-actions-ftp
+```
+If you run the command without specifying a type, it will interactively ask you to choose from the available templates. See the "Deployment" section for more details.
 
 ---
 
@@ -749,7 +778,47 @@ pages/
 
 ---
 
-## 18. Example Q&A for AI Assistant
+## 18. Deployment with CI/CD (GitHub Actions)
+
+Deploying a modern web application involves more than just copying files. You need to install dependencies, build frontend assets, and manage sensitive environment variables. STCMS helps you automate this process using the `deploy:init` command.
+
+### The `.env` File Problem
+Your `.env` file contains sensitive information (like API keys and database passwords) and is correctly listed in `.gitignore`. This means it **will not** be committed to your Git repository. When a CI/CD runner like GitHub Actions checks out your code, the `.env` file will be missing, and your application will fail.
+
+### The Solution: GitHub Secrets and Workflow Scaffolding
+The standard and most secure solution is to store your environment variables as **Secrets** in your GitHub repository and use a workflow to create the `.env` file on the server during deployment. The `deploy:init` command automates the creation of this workflow file.
+
+**Step-by-Step Guide to Automated Deployment:**
+
+1.  **Scaffold the Workflow File:**
+    Run the `deploy:init` command in your project root. For deploying to a standard FTP server, use the `github-actions-ftp` type.
+    ```bash
+    php vendor/bin/stcms deploy:init github-actions-ftp
+    ```
+    This will create a new file at `.github/workflows/deploy.yml`.
+
+2.  **Add Secrets to Your GitHub Repository:**
+    Navigate to your repository on GitHub, then go to `Settings` > `Secrets and variables` > `Actions`. Click `New repository secret` and add the following secrets. These must match the values needed by your application and the `deploy.yml` workflow.
+    -   `FTP_SERVER`: Your FTP host address (e.g., `ftp.yourdomain.com`).
+    -   `FTP_USERNAME`: Your FTP username.
+    -   `FTP_PASSWORD`: Your FTP password.
+    -   `API_BASE_URL`: The base URL for your API.
+    -   `DEFAULT_LANGUAGE`: The default language for your site (e.g., `en`).
+    -   `VITE_BASE_URL`: The base URL for Vite, often the same as your site's URL.
+
+3.  **Commit and Push:**
+    Commit the new `.github/workflows/deploy.yml` file and push it to your `main` branch.
+    ```bash
+    git add .github/workflows/deploy.yml
+    git commit -m "feat: Add deployment workflow"
+    git push origin main
+    ```
+
+That's it! The next time you push a change to your `main` branch, GitHub Actions will automatically trigger, build your project, create the `.env` file from your secrets, and deploy everything to your FTP server.
+
+---
+
+## 19. Example Q&A for AI Assistant
 
 **Q: How do I create a new page with a React component?**
 > 1. Create `pages/about.twig` and extend `default.twig`.
@@ -798,7 +867,7 @@ pages/
 
 ---
 
-## 19. Benefits & Philosophy of STCMS
+## 20. Benefits & Philosophy of STCMS
 - Clean separation of backend, pages, templates, and frontend components
 - Fast, SEO-friendly, and interactive
 - Works on most hosting (APCu/file cache)
@@ -810,30 +879,32 @@ pages/
 
 ---
 
-## 20. Quick Reference Table
+## 21. Quick Reference Table
 
-| Task                        | How/Where                                      |
-|-----------------------------|------------------------------------------------|
-| Create page                 | `pages/[lang]/*.twig`, extend `default.twig`   |
+| Task | How/Where |
+|---|---|
+| Create page | `pages/[lang]/*.twig`, extend `default.twig` |
 | **Pass page-specific PHP data** | **Add logic to `renderMultilingualTemplate` in `MultilingualRouter.php`.** |
 | **Create global PHP function for Twig** | **Add a `TwigFunction` in `addCustomFunctions` in `TemplateEngine.php`.** |
-| Create reusable component   | Define a `{% macro ... %}` in `components/components.twig`. |
-| Use reusable component    | `{% import "components.twig" as c %}` then `{{ c.my_macro(...) }}`. |
+| Create reusable component | Define a `{% macro ... %}` in `components/components.twig`. |
+| Use reusable component | `{% import "components.twig" as c %}` then `{{ c.my_macro(...) }}`. |
 | Create dynamic page (e.g., product) | Create `pages/en/product.twig`. Access ID via `{{ get_params.id }}`. |
-| **Get URL GET parameters**      | **Use `{{ get_params.your_key }}` inside any Twig file.** |
-| Create template/layout      | `templates/*.twig`, use Twig blocks            |
-| Create React component      | `assets/js/components/*.jsx`, export default   |
-| Register React component    | `assets/js/registry.js`                        |
-| Add mount point             | `<div id="...\"></div>` in Twig page           |
-| Pass data to React          | `data-*` attributes in HTML, parse in registry |
-| Build assets                | `npm run build`                                |
-| Serve app                   | `php -S localhost:8000 -t public`              |
-| **Add new language support**  | **Create a folder `pages/[lang]/` or run `install:help [lang]`. It's detected automatically.** |
-| Configure default language  | Set `DEFAULT_LANGUAGE=en` in `.env`
+| **Get URL GET parameters** | **Use `{{ get_params.your_key }}` inside any Twig file.** |
+| Create template/layout | `templates/*.twig`, use Twig blocks |
+| Create React component | `assets/js/components/*.jsx`, export default |
+| Register React component | `assets/js/registry.js` |
+| Add mount point | `<div id="...\"></div>` in Twig page |
+| Pass data to React | `data-*` attributes in HTML, parse in registry |
+| Build assets | `npm run build` |
+| Serve app | `php -S localhost:8000 -t public` |
+| **Clear application cache** | **`php vendor/bin/stcms cache:clear`** |
+| **Setup deployment workflow** | **`php vendor/bin/stcms deploy:init [type]`** |
+| **Add new language support** | **Create a folder `pages/[lang]/` or run `install:help [lang]`. It's detected automatically.** |
+| Configure default language | Set `DEFAULT_LANGUAGE=en` in `.env` |
 
 ---
 
-## 21. Appendix: For AI Assistants
+## 22. Appendix: For AI Assistants
 
 This section provides specific instructions and guidelines for AI assistants to ensure they provide accurate and helpful support to STCMS users.
 

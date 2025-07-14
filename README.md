@@ -13,9 +13,11 @@ A Composer-installable PHP library for building modern, component-based frontend
 - 🚀 **Hybrid Rendering**: Twig for server-side, React for interactive components
 - 🔌 **API Integration**: Fetch data from GEMVC or any API using Guzzle
 - ⚡ **Modern Caching**: Symfony Cache (APCu/file)
-- 🛠️ **Two-Step Project Init**:
-  - `init` command for a minimal, single-language project.
-  - `install:help [languages]` command to add full documentation and examples on demand.
+- 🛠️ **Powerful CLI**:
+  - `init` command for one-step project scaffolding.
+  - `install:help` to add full documentation and examples.
+  - `cache:clear` for easy cache management in production.
+  - `deploy:init` to set up automated deployment workflows (e.g., GitHub Actions).
 - 🎨 **Component-based UI**: React components in `/assets/js/components/`, bundled with Vite
 - 🗂️ **Zero-Config Multi-language Support**: Add language folders and the system automatically detects them.
 - 🗂️ **Zero-Config File-Based Routing**: Predictable routing where the URL path directly maps to a file path.
@@ -80,9 +82,9 @@ project-root/
 
 ## Routing, Security, and Best Practices
 
-- **.htaccess** routes all requests to `index.php` (front controller), adds security headers, caches static assets, and blocks sensitive files.
-- **index.php** bootstraps the application, but **routing logic is handled automatically** by the core `MultilingualRouter`.
-- The router uses a simple and powerful **file-based routing** system. It maps a URL path like `/en/about/us` to a template file (`pages/en/about/us.twig`) or to a directory's index file (`pages/en/about/index.twig`).
+- **Centralized .htaccess**: A secure, modern, and robust two-file `.htaccess` setup protects sensitive files and routes all requests through the public front-controller.
+- **File-Based Routing**: The router uses a simple and powerful system that maps a URL path like `/en/about` directly to a template file like `pages/en/about.twig`.
+- **Deployment Ready**: Built-in CLI commands help you generate CI/CD workflow files (e.g., for GitHub Actions) to automate your deployment process.
 - Dynamic data is handled via standard GET parameters (`?id=123`), which are automatically available in your templates.
 
 ---
@@ -114,21 +116,23 @@ project-root/
    ```bash
    # Install English docs
    php vendor/bin/stcms install:help en
-
-   # Install German and Farsi docs
-   php vendor/bin/stcms install:help de fa
    ```
-4. Install frontend dependencies and build assets:
+4. (Optional) Set up an automated deployment workflow:
+   ```bash
+   # Create a workflow file for GitHub Actions and FTP
+   php vendor/bin/stcms deploy:init github-actions-ftp
+   ```
+5. Install frontend dependencies and build assets:
    ```bash
    npm install
    npm run build
    ```
-5. Configure environment in `.env`.
-6. Start the PHP server:
+6. Configure environment in `.env`. (For deployments, see the guide on GitHub Secrets in `AI_ONBOARDING.md`).
+7. Start the PHP server:
    ```bash
    php -S localhost:8000 -t public
    ```
-7. **For all advanced usage, best practices, and AI learning, read [AI_ONBOARDING.md](./vendor/gemvc/stcms/AI_ONBOARDING.md).**
+8. **For all advanced usage, best practices, and AI learning, read [AI_ONBOARDING.md](./AI_ONBOARDING.md).**
 
 ---
 

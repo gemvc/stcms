@@ -65,9 +65,10 @@ class InitCommand extends Command
             'assets/css',
             'components',
             'pages/en',
-            'public/assets/build', // Vite build output
+            'public/assets/build',
             'templates',
         ];
+
         foreach ($dirs as $dir) {
             $fs->mkdir($root . '/' . $dir);
         }

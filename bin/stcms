@@ -25,6 +25,7 @@ use Symfony\Component\Console\Application;
 use Gemvc\Stcms\Command\InitCommand;
 use Gemvc\Stcms\Command\InstallHelpCommand;
 use Gemvc\Stcms\Command\CacheClearCommand;
+use Gemvc\Stcms\Command\DeployInitCommand;
 
 $application = new Application('STCMS', '1.0.0');
 
@@ -32,5 +33,6 @@ $application = new Application('STCMS', '1.0.0');
 $application->add(new InitCommand());
 $application->add(new InstallHelpCommand());
 $application->add(new CacheClearCommand());
+$application->add(new DeployInitCommand());
 
 $application->run(); 

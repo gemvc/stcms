@@ -1,11 +1,27 @@
-# Forbid access to sensitive files in the root directory
-<FilesMatch "^(\.env|\.gitignore|composer\.json|composer\.lock|package\.json|vite\.config\.js)$">
-    Require all denied
-</FilesMatch>
+#
+# STCMS Secure Root .htaccess
+#
 
-# Explicitly block access to all non-public directories
+# --- 1. Security: Block all files and directories starting with a dot ---
+# This is a strong general rule that protects .git, .env, etc.
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^(assets|components|pages|src|templates|vendor)($|/) - [F,L]
+    RewriteRule "(^|/)\." - [F]
+</IfModule>
+
+
+# --- 2. Security: Explicitly forbid access to sensitive directories ---
+# Any direct web request to these folders will be blocked.
+# This replaces the need for separate .htaccess files inside them.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(src|vendor|templates|pages|components|assets)/?$ - [F,NC,L]
+</IfModule>
+
+
+# --- 3. Routing: Pass all other requests to the public folder ---
+# If a request was not blocked by the rules above, it's sent to the public folder.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>

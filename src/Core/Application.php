@@ -5,14 +5,12 @@ class Application
 {
     private Router $router;
     private TemplateEngine $templateEngine;
-    private ApiClient $apiClient;
     private array $session;
 
-    public function __construct(Router $router, TemplateEngine $templateEngine, ApiClient $apiClient)
+    public function __construct(Router $router, TemplateEngine $templateEngine)
     {
         $this->router = $router;
         $this->templateEngine = $templateEngine;
-        $this->apiClient = $apiClient;
         $this->session = $_SESSION ?? [];
         
         // Start session if not already started
@@ -66,11 +64,6 @@ class Application
     public function getTemplateEngine(): TemplateEngine
     {
         return $this->templateEngine;
-    }
-
-    public function getApiClient(): ApiClient
-    {
-        return $this->apiClient;
     }
 
     public function getSession(): array

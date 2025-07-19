@@ -34,7 +34,12 @@ class TemplateEngine
         ]);
 
         if (!$this->isDev) {
-            $manifestPath = $projectRoot . '/public/assets/build/manifest.json';
+            // Try the standard Vite manifest location first
+            $manifestPath = $projectRoot . '/public/assets/build/.vite/manifest.json';
+            if (!file_exists($manifestPath)) {
+                // Fallback to the old location
+                $manifestPath = $projectRoot . '/public/assets/build/manifest.json';
+            }
             if (file_exists($manifestPath)) {
                 $this->manifest = json_decode(file_get_contents($manifestPath), true);
             }

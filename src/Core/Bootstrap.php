@@ -81,7 +81,13 @@ class Bootstrap
         
         // Auto-detect default language from pages directory
         $languages = $this->getSupportedLanguages();
-        $_ENV['DEFAULT_LANGUAGE'] = $languages[0] ?? 'en';
+        // Only set DEFAULT_LANGUAGE from .env if it exists in the languages list
+        $defaultLang = $_ENV['DEFAULT_LANGUAGE'] ?? 'en';
+        if (!in_array($defaultLang, $languages)) {
+            $_ENV['DEFAULT_LANGUAGE'] = $languages[0] ?? 'en';
+        } else {
+            $_ENV['DEFAULT_LANGUAGE'] = $defaultLang;
+        }
         
         // Store configuration for easy access
         $this->config = [
@@ -181,7 +187,7 @@ class Bootstrap
         // Ensure default language is in supported languages
         $defaultLang = $_ENV['DEFAULT_LANGUAGE'] ?? 'en';
         if (!in_array($defaultLang, $languages)) {
-            $_ENV['DEFAULT_LANGUAGE'] = $languages[0];
+            $_ENV['DEFAULT_LANGUAGE'] = $languages[0] ?? 'en';
             error_log("STCMS: Bootstrap - Default language '{$defaultLang}' not found in supported languages. Using '{$languages[0]}'");
         }
 
